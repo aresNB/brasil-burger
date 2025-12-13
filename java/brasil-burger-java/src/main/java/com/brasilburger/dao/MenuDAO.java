@@ -92,6 +92,51 @@ public class MenuDAO {
     }
 
     /**
+     * Récupérer les menus actifs
+     */
+    public List<Menu> findAllActive() throws SQLException {
+        List<Menu> menus = new ArrayList<>();
+        String sql = "SELECT m.*, " +
+                "b.libelle as burger_nom, b.prix as burger_prix, " +
+                "c1.libelle as boisson_nom, c1.prix as boisson_prix, " +
+                "c2.libelle as frite_nom, c2.prix as frite_prix " +
+                "FROM menus m " +
+                "JOIN burgers b ON m.burgerId = b.id " +
+                "JOIN complements c1 ON m.boissonId = c1.id " +
+                "JOIN complements c2 ON m.friteId = c2.id " +
+                "WHERE m.isArchived = false " +
+                "ORDER BY m.id DESC";
+
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                menus.add(mapResultSetToMenu(rs));
+            }
+        }
+        return menus;
+    }
+
+    /**
+     * Mettre à jour un menu
+     */
+    public void update(Menu menu) throws SQLException {
+        String sql = "UPDATE menus SET libelle = ?, imageUrl = ?, burgerId = ?, " +
+                "boissonId = ?, friteId = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, menu.getLibelle());
+            stmt.setString(2, menu.getImageUrl());
+            stmt.setInt(3, menu.getBurgerId());
+            stmt.setInt(4, menu.getBoissonId());
+            stmt.setInt(5, menu.getFriteId());
+            stmt.setInt(6, menu.getId());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Menu
      */
     private Menu mapResultSetToMenu(ResultSet rs) throws SQLException {

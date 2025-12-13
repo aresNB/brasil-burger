@@ -35,6 +35,7 @@ public class MenuService {
             System.out.println(ConsoleUtils.SEPARATOR);
             System.out.println("\n1. Créer un menu");
             System.out.println("2. Lister tous les menus");
+            System.out.println("3. Modifier un menu");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -46,6 +47,9 @@ public class MenuService {
                     break;
                 case 2:
                     listerMenus();
+                    break;
+                case 3:
+                    modifierMenu();
                     break;
                 case 0:
                     return;
@@ -147,4 +151,104 @@ public class MenuService {
         ConsoleUtils.pause();
     }
 
+    private void modifierMenu() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("MODIFIER UN MENU"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Menu> menus = menuDAO.findAllActive();
+            if (menus.isEmpty()) {
+                System.out.println("\n📭 Aucun menu actif trouvé.");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📋 Menus disponibles :");
+            for (Menu menu : menus) {
+                System.out.println("  " + menu);
+            }
+
+            System.out.print("\nID du menu à modifier : ");
+            int id = ConsoleUtils.lireEntier(scanner);
+
+            Menu menu = menuDAO.findById(id);
+            if (menu == null) {
+                System.out.println("❌ Menu introuvable!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📝 Menu actuel :");
+            System.out.println(menu.toDetailString());
+
+            scanner.nextLine(); // Clear buffer
+
+            System.out.print("\nNouveau libellé (ou Entrée pour garder) : ");
+            String libelle = scanner.nextLine().trim();
+            if (!libelle.isEmpty()) {
+                menu.setLibelle(libelle);
+            }
+
+            System.out.print("Nouvelle URL image (ou Entrée pour garder) : ");
+            String imageUrl = scanner.nextLine().trim();
+            if (!imageUrl.isEmpty()) {
+                menu.setImageUrl(imageUrl);
+            }
+
+            // Modification des composants (optionnel)
+            System.out.print("\nModifier le burger ? (O/N) : ");
+            String changeBurger = scanner.next().trim().toUpperCase();
+            scanner.nextLine();
+
+            if (changeBurger.equals("O")) {
+                List<Burger> burgers = burgerDAO.findAllActive();
+                System.out.println("\n🍔 Burgers disponibles :");
+                for (Burger b : burgers) {
+                    System.out.println("  " + b);
+                }
+                System.out.print("Nouveau burger (ID) : ");
+                menu.setBurgerId(ConsoleUtils.lireEntier(scanner));
+                scanner.nextLine();
+            }
+
+            System.out.print("Modifier la boisson ? (O/N) : ");
+            String changeBoisson = scanner.next().trim().toUpperCase();
+            scanner.nextLine();
+
+            if (changeBoisson.equals("O")) {
+                List<Complement> boissons = complementDAO.findByType("BOISSON");
+                System.out.println("\n🥤 Boissons disponibles :");
+                for (Complement c : boissons) {
+                    System.out.println("  " + c);
+                }
+                System.out.print("Nouvelle boisson (ID) : ");
+                menu.setBoissonId(ConsoleUtils.lireEntier(scanner));
+                scanner.nextLine();
+            }
+
+            System.out.print("Modifier les frites ? (O/N) : ");
+            String changeFrite = scanner.next().trim().toUpperCase();
+            scanner.nextLine();
+
+            if (changeFrite.equals("O")) {
+                List<Complement> frites = complementDAO.findByType("FRITE");
+                System.out.println("\n🍟 Frites disponibles :");
+                for (Complement c : frites) {
+                    System.out.println("  " + c);
+                }
+                System.out.print("Nouvelles frites (ID) : ");
+                menu.setFriteId(ConsoleUtils.lireEntier(scanner));
+            }
+
+            menuDAO.update(menu);
+            System.out.println("\n✅ Menu modifié avec succès!");
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la modification: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
 }
