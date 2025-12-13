@@ -108,6 +108,18 @@ public class ComplementDAO {
     }
 
     /**
+     * Archiver un complément
+     */
+    public void archive(int id) throws SQLException {
+        String sql = "UPDATE complements SET isArchived = true WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Complement
      */
     private Complement mapResultSetToComplement(ResultSet rs) throws SQLException {

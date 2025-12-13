@@ -28,6 +28,7 @@ public class ComplementService {
             System.out.println("\n1. Créer un complément");
             System.out.println("2. Lister tous les compléments");
             System.out.println("3. Modifier un complément");
+            System.out.println("4. Archiver un complément");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -42,6 +43,9 @@ public class ComplementService {
                     break;
                 case 3:
                     modifierComplement();
+                    break;
+                case 4:
+                    archiverComplement();
                     break;
                 case 0:
                     return;
@@ -242,4 +246,62 @@ public class ComplementService {
         ConsoleUtils.pause();
     }
 
+    /**
+     * Archiver un complément
+     */
+    private void archiverComplement() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("ARCHIVER UN COMPLÉMENT"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Complement> complements = complementDAO.findAllActive();
+            if (complements.isEmpty()) {
+                System.out.println("\n📭 Aucun complément actif trouvé.");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📋 Compléments actifs :");
+            for (Complement c : complements) {
+                System.out.println("  " + c);
+            }
+
+            System.out.print("\nID du complément à archiver : ");
+            int id = ConsoleUtils.lireEntier(scanner);
+
+            Complement complement = complementDAO.findById(id);
+            if (complement == null) {
+                System.out.println("❌ Complément introuvable!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            if (complement.isArchived()) {
+                System.out.println("⚠️  Ce complément est déjà archivé!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n⚠️  Voulez-vous vraiment archiver ce complément ?");
+            System.out.println(complement.toDetailString());
+            System.out.print("Confirmer (O/N) : ");
+
+            String confirmation = scanner.next().trim().toUpperCase();
+            scanner.nextLine(); // Vider le buffer
+
+            if (confirmation.equals("O") || confirmation.equals("OUI")) {
+                complementDAO.archive(id);
+                System.out.println("\n✅ Complément archivé avec succès!");
+            } else {
+                System.out.println("\n❌ Opération annulée.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de l'archivage: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
 }
