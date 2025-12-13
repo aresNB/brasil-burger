@@ -31,6 +31,7 @@ public class BurgerService {
             System.out.println(ConsoleUtils.SEPARATOR);
             System.out.println("\n1. Créer un burger");
             System.out.println("2. Lister tous les burgers");
+            System.out.println("3. Modifier un burger");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -42,6 +43,9 @@ public class BurgerService {
                     break;
                 case 2:
                     listerBurgers();
+                    break;
+                case 3:
+                    modifierBurger();
                     break;
                 case 0:
                     return;
@@ -155,4 +159,90 @@ public class BurgerService {
         ConsoleUtils.pause();
     }
 
+    /**
+     * Modifier un burger
+     */
+    private void modifierBurger() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("MODIFIER UN BURGER"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            // Afficher la liste des burgers actifs
+            List<Burger> burgers = burgerDAO.findAllActive();
+            if (burgers.isEmpty()) {
+                System.out.println("\n📭 Aucun burger actif trouvé.");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📋 Burgers disponibles :");
+            for (Burger burger : burgers) {
+                System.out.println("  " + burger);
+            }
+
+            System.out.print("\nID du burger à modifier : ");
+            int id = ConsoleUtils.lireEntier(scanner);
+
+            Burger burger = burgerDAO.findById(id);
+            if (burger == null) {
+                System.out.println("❌ Burger introuvable!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📝 Burger actuel :");
+            System.out.println(burger.toDetailString());
+
+            scanner.nextLine(); // Clear buffer
+
+            // Modification des champs
+            System.out.print("\nNouveau libellé (ou Entrée pour garder) : ");
+            String libelle = scanner.nextLine().trim();
+            if (!libelle.isEmpty()) {
+                burger.setLibelle(libelle);
+            }
+
+            System.out.print("Nouvelle description (ou Entrée pour garder) : ");
+            String description = scanner.nextLine().trim();
+            if (!description.isEmpty()) {
+                burger.setDescription(description);
+            }
+
+            System.out.print("Nouveau prix (ou 0 pour garder) : ");
+            String prixStr = scanner.nextLine().trim();
+            if (!prixStr.isEmpty() && !prixStr.equals("0")) {
+                burger.setPrix(new BigDecimal(prixStr));
+            }
+
+            System.out.print("Nouvelle URL image (ou Entrée pour garder) : ");
+            String imageUrl = scanner.nextLine().trim();
+            if (!imageUrl.isEmpty()) {
+                burger.setImageUrl(imageUrl);
+            }
+
+            // Catégorie
+            List<BurgerCategorie> categories = categorieDAO.findAll();
+            System.out.println("\n📂 Catégories disponibles :");
+            for (BurgerCategorie cat : categories) {
+                System.out.println("  " + cat);
+            }
+            System.out.print("Nouvelle catégorie (ou 0 pour garder) : ");
+            int categorieId = ConsoleUtils.lireEntier(scanner);
+            if (categorieId > 0) {
+                burger.setCategorieId(categorieId);
+            }
+
+            burgerDAO.update(burger);
+            System.out.println("\n✅ Burger modifié avec succès!");
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la modification: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Format de nombre invalide!");
+        }
+
+        ConsoleUtils.pause();
+    }
 }

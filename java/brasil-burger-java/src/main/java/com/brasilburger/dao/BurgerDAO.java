@@ -68,6 +68,70 @@ public class BurgerDAO {
     }
 
     /**
+     * Récupérer les burgers actifs (non archivés)
+     */
+    public List<Burger> findAllActive() throws SQLException {
+        List<Burger> burgers = new ArrayList<>();
+        String sql = "SELECT b.*, bc.nom as categorie_nom " +
+                "FROM burgers b " +
+                "LEFT JOIN burger_categories bc ON b.categorieId = bc.id " +
+                "WHERE b.isArchived = false " +
+                "ORDER BY b.id DESC";
+
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                burgers.add(mapResultSetToBurger(rs));
+            }
+        }
+        return burgers;
+    }
+
+    /**
+     * Récupérer un burger par son ID
+     */
+    public Burger findById(int id) throws SQLException {
+        String sql = "SELECT b.*, bc.nom as categorie_nom " +
+                "FROM burgers b " +
+                "LEFT JOIN burger_categories bc ON b.categorieId = bc.id " +
+                "WHERE b.id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToBurger(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Mettre à jour un burger
+     */
+    public void update(Burger burger) throws SQLException {
+        String sql = "UPDATE burgers SET libelle = ?, description = ?, prix = ?, " +
+                "imageUrl = ?, categorieId = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, burger.getLibelle());
+            stmt.setString(2, burger.getDescription());
+            stmt.setBigDecimal(3, burger.getPrix());
+            stmt.setString(4, burger.getImageUrl());
+            if (burger.getCategorieId() != null) {
+                stmt.setInt(5, burger.getCategorieId());
+            } else {
+                stmt.setNull(5, Types.INTEGER);
+            }
+            stmt.setInt(6, burger.getId());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Burger
      */
     private Burger mapResultSetToBurger(ResultSet rs) throws SQLException {
