@@ -30,6 +30,7 @@ public class BurgerService {
             System.out.println(ConsoleUtils.centerText("GESTION DES BURGERS"));
             System.out.println(ConsoleUtils.SEPARATOR);
             System.out.println("\n1. Créer un burger");
+            System.out.println("2. Lister tous les burgers");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -38,6 +39,9 @@ public class BurgerService {
             switch (choix) {
                 case 1:
                     creerBurger();
+                    break;
+                case 2:
+                    listerBurgers();
                     break;
                 case 0:
                     return;
@@ -103,4 +107,52 @@ public class BurgerService {
 
         ConsoleUtils.pause();
     }
+
+    /**
+     * Lister tous les burgers
+     */
+    private void listerBurgers() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("LISTE DES BURGERS"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Burger> burgers = burgerDAO.findAll();
+
+            if (burgers.isEmpty()) {
+                System.out.println("\n📭 Aucun burger trouvé.");
+            } else {
+                System.out.println("\n📋 Total : " + burgers.size() + " burger(s)\n");
+
+                // Séparer actifs et archivés
+                List<Burger> actifs = burgers.stream()
+                        .filter(b -> !b.isArchived())
+                        .toList();
+                List<Burger> archives = burgers.stream()
+                        .filter(Burger::isArchived)
+                        .toList();
+
+                if (!actifs.isEmpty()) {
+                    System.out.println("✅ BURGERS ACTIFS (" + actifs.size() + "):");
+                    for (Burger burger : actifs) {
+                        System.out.println("  " + burger);
+                    }
+                }
+
+                if (!archives.isEmpty()) {
+                    System.out.println("\n📦 BURGERS ARCHIVÉS (" + archives.size() + "):");
+                    for (Burger burger : archives) {
+                        System.out.println("  " + burger);
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la récupération: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
+
 }

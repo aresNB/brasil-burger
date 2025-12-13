@@ -100,6 +100,14 @@ public class Burger {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Burger #%d - %s | Prix: %s FCFA | Catégorie: %s | %s",
+                id, libelle, prix,
+                categorieNom != null ? categorieNom : "N/A",
+                isArchived ? "ARCHIVÉ" : "ACTIF");
+    }
+
     public String toDetailString() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n╔════════════════════════════════════════════════════════╗\n");

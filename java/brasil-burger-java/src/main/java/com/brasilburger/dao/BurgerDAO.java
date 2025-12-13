@@ -2,8 +2,12 @@ package com.brasilburger.dao;
 
 import com.brasilburger.config.DatabaseConfig;
 import com.brasilburger.models.Burger;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BurgerDAO {
 
@@ -41,5 +45,42 @@ public class BurgerDAO {
                 }
             }
         }
+    }
+
+    /**
+     * Récupérer tous les burgers
+     */
+    public List<Burger> findAll() throws SQLException {
+        List<Burger> burgers = new ArrayList<>();
+        String sql = "SELECT b.*, bc.nom as categorie_nom " +
+                "FROM burgers b " +
+                "LEFT JOIN burger_categories bc ON b.categorieId = bc.id " +
+                "ORDER BY b.id DESC";
+
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                burgers.add(mapResultSetToBurger(rs));
+            }
+        }
+        return burgers;
+    }
+
+    /**
+     * Mapper un ResultSet vers un objet Burger
+     */
+    private Burger mapResultSetToBurger(ResultSet rs) throws SQLException {
+        Burger burger = new Burger();
+        burger.setId(rs.getInt("id"));
+        burger.setLibelle(rs.getString("libelle"));
+        burger.setDescription(rs.getString("description"));
+        burger.setPrix(rs.getBigDecimal("prix"));
+        burger.setImageUrl(rs.getString("imageUrl"));
+        burger.setArchived(rs.getBoolean("isArchived"));
+        burger.setCategorieId(rs.getInt("categorieId"));
+        burger.setCategorieNom(rs.getString("categorie_nom"));
+        burger.setCreatedAt(rs.getTimestamp("createdAt"));
+        return burger;
     }
 }
