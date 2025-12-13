@@ -32,6 +32,7 @@ public class BurgerService {
             System.out.println("\n1. Créer un burger");
             System.out.println("2. Lister tous les burgers");
             System.out.println("3. Modifier un burger");
+            System.out.println("4. Archiver un burger");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -46,6 +47,9 @@ public class BurgerService {
                     break;
                 case 3:
                     modifierBurger();
+                    break;
+                case 4:
+                    archiverBurger();
                     break;
                 case 0:
                     return;
@@ -241,6 +245,66 @@ public class BurgerService {
             System.out.println("❌ Erreur lors de la modification: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.out.println("❌ Format de nombre invalide!");
+        }
+
+        ConsoleUtils.pause();
+    }
+
+    /**
+     * Archiver un burger
+     */
+    private void archiverBurger() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("ARCHIVER UN BURGER"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Burger> burgers = burgerDAO.findAllActive();
+            if (burgers.isEmpty()) {
+                System.out.println("\n📭 Aucun burger actif trouvé.");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📋 Burgers actifs :");
+            for (Burger burger : burgers) {
+                System.out.println("  " + burger);
+            }
+
+            System.out.print("\nID du burger à archiver : ");
+            int id = ConsoleUtils.lireEntier(scanner);
+
+            Burger burger = burgerDAO.findById(id);
+            if (burger == null) {
+                System.out.println("❌ Burger introuvable!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            if (burger.isArchived()) {
+                System.out.println("⚠️  Ce burger est déjà archivé!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n⚠️  Voulez-vous vraiment archiver ce burger ?");
+            System.out.println(burger.toDetailString());
+            System.out.print("Confirmer (O/N) : ");
+
+            // FIX: Utiliser scanner.next() au lieu de nextLine()
+            String confirmation = scanner.next().trim().toUpperCase();
+            scanner.nextLine(); // Vider le buffer après
+
+            if (confirmation.equals("O") || confirmation.equals("OUI")) {
+                burgerDAO.archive(id);
+                System.out.println("\n✅ Burger archivé avec succès!");
+            } else {
+                System.out.println("\n❌ Opération annulée.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de l'archivage: " + e.getMessage());
         }
 
         ConsoleUtils.pause();

@@ -132,6 +132,18 @@ public class BurgerDAO {
     }
 
     /**
+     * Archiver un burger
+     */
+    public void archive(int id) throws SQLException {
+        String sql = "UPDATE burgers SET isArchived = true WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Burger
      */
     private Burger mapResultSetToBurger(ResultSet rs) throws SQLException {
