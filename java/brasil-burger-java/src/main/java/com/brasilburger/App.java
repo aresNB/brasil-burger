@@ -3,6 +3,7 @@ package com.brasilburger;
 import com.brasilburger.config.DatabaseConfig;
 import com.brasilburger.services.BurgerService;
 import com.brasilburger.utils.ConsoleUtils;
+import com.brasilburger.services.ComplementService;
 
 import java.util.Scanner;
 
@@ -10,6 +11,7 @@ public class App {
 
     private static Scanner scanner = new Scanner(System.in);
     private static BurgerService burgerService = new BurgerService();
+    private static ComplementService complementService = new ComplementService();
 
     public static void main(String[] args) {
         DatabaseConfig dbConfig = DatabaseConfig.getInstance();
@@ -32,6 +34,7 @@ public class App {
             System.out.println("║        🍔  BRASIL BURGER - GESTION CATALOGUE  🍔       ║");
             System.out.println("╚════════════════════════════════════════════════════════╝");
             System.out.println("\n1. Gérer les Burgers");
+            System.out.println("\n2. Gérer les Compléments");
             System.out.println("0. Quitter");
             System.out.print("\nVotre choix : ");
 
@@ -40,6 +43,9 @@ public class App {
             switch (choix) {
                 case 1:
                     burgerService.afficherMenu();
+                    break;
+                case 2:
+                    complementService.afficherMenu();
                     break;
                 case 0:
                     System.out.println("\n🍔 À bientôt! 🍔\n");
