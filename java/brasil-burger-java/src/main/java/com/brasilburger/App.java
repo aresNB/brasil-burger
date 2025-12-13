@@ -34,7 +34,7 @@ public class App {
             System.out.println("║        🍔  BRASIL BURGER - GESTION CATALOGUE  🍔       ║");
             System.out.println("╚════════════════════════════════════════════════════════╝");
             System.out.println("\n1. Gérer les Burgers");
-            System.out.println("\n2. Gérer les Compléments");
+            System.out.println("2. Gérer les Compléments");
             System.out.println("0. Quitter");
             System.out.print("\nVotre choix : ");
 

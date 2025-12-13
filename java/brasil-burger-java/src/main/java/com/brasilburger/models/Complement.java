@@ -81,6 +81,12 @@ public class Complement {
         this.createdAt = createdAt;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Complément #%d - %s | Type: %s | Prix: %s FCFA | %s",
+                id, libelle, type, prix, isArchived ? "ARCHIVÉ" : "ACTIF");
+    }
+
     public String toDetailString() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n╔════════════════════════════════════════════════════════╗\n");

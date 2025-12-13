@@ -2,6 +2,8 @@ package com.brasilburger.dao;
 
 import com.brasilburger.config.DatabaseConfig;
 import com.brasilburger.models.Complement;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.sql.*;
 
@@ -35,5 +37,37 @@ public class ComplementDAO {
                 }
             }
         }
+    }
+
+    /**
+     * Récupérer tous les compléments
+     */
+    public List<Complement> findAll() throws SQLException {
+        List<Complement> complements = new ArrayList<>();
+        String sql = "SELECT * FROM complements ORDER BY type, id DESC";
+
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                complements.add(mapResultSetToComplement(rs));
+            }
+        }
+        return complements;
+    }
+
+    /**
+     * Mapper un ResultSet vers un objet Complement
+     */
+    private Complement mapResultSetToComplement(ResultSet rs) throws SQLException {
+        Complement complement = new Complement();
+        complement.setId(rs.getInt("id"));
+        complement.setLibelle(rs.getString("libelle"));
+        complement.setPrix(rs.getBigDecimal("prix"));
+        complement.setImageUrl(rs.getString("imageUrl"));
+        complement.setType(rs.getString("type"));
+        complement.setArchived(rs.getBoolean("isArchived"));
+        complement.setCreatedAt(rs.getTimestamp("createdAt"));
+        return complement;
     }
 }
