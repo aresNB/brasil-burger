@@ -27,6 +27,7 @@ public class ComplementService {
             System.out.println(ConsoleUtils.SEPARATOR);
             System.out.println("\n1. Créer un complément");
             System.out.println("2. Lister tous les compléments");
+            System.out.println("3. Modifier un complément");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -38,6 +39,9 @@ public class ComplementService {
                     break;
                 case 2:
                     listerComplements();
+                    break;
+                case 3:
+                    modifierComplement();
                     break;
                 case 0:
                     return;
@@ -157,4 +161,85 @@ public class ComplementService {
 
         ConsoleUtils.pause();
     }
+
+    /**
+     * Modifier un complément
+     */
+    private void modifierComplement() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("MODIFIER UN COMPLÉMENT"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Complement> complements = complementDAO.findAllActive();
+            if (complements.isEmpty()) {
+                System.out.println("\n📭 Aucun complément actif trouvé.");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📋 Compléments disponibles :");
+            for (Complement c : complements) {
+                System.out.println("  " + c);
+            }
+
+            System.out.print("\nID du complément à modifier : ");
+            int id = ConsoleUtils.lireEntier(scanner);
+
+            Complement complement = complementDAO.findById(id);
+            if (complement == null) {
+                System.out.println("❌ Complément introuvable!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n📝 Complément actuel :");
+            System.out.println(complement.toDetailString());
+
+            scanner.nextLine(); // Clear buffer
+
+            // Modification
+            System.out.print("\nNouveau libellé (ou Entrée pour garder) : ");
+            String libelle = scanner.nextLine().trim();
+            if (!libelle.isEmpty()) {
+                complement.setLibelle(libelle);
+            }
+
+            System.out.print("Nouveau prix (ou 0 pour garder) : ");
+            String prixStr = scanner.nextLine().trim();
+            if (!prixStr.isEmpty() && !prixStr.equals("0")) {
+                complement.setPrix(new BigDecimal(prixStr));
+            }
+
+            System.out.print("Nouvelle URL image (ou Entrée pour garder) : ");
+            String imageUrl = scanner.nextLine().trim();
+            if (!imageUrl.isEmpty()) {
+                complement.setImageUrl(imageUrl);
+            }
+
+            System.out.print("Changer le type ? (O/N) : ");
+            String changeType = scanner.next().trim().toUpperCase();
+            scanner.nextLine(); // Clear buffer
+
+            if (changeType.equals("O")) {
+                System.out.println("  1. BOISSON");
+                System.out.println("  2. FRITE");
+                System.out.print("Nouveau type : ");
+                int typeChoix = ConsoleUtils.lireEntier(scanner);
+                complement.setType((typeChoix == 1) ? "BOISSON" : "FRITE");
+            }
+
+            complementDAO.update(complement);
+            System.out.println("\n✅ Complément modifié avec succès!");
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la modification: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Format de nombre invalide!");
+        }
+
+        ConsoleUtils.pause();
+    }
+
 }

@@ -57,6 +57,57 @@ public class ComplementDAO {
     }
 
     /**
+     * Récupérer les compléments actifs
+     */
+    public List<Complement> findAllActive() throws SQLException {
+        List<Complement> complements = new ArrayList<>();
+        String sql = "SELECT * FROM complements WHERE isArchived = false ORDER BY type, id DESC";
+
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                complements.add(mapResultSetToComplement(rs));
+            }
+        }
+        return complements;
+    }
+
+    /**
+     * Récupérer un complément par ID
+     */
+    public Complement findById(int id) throws SQLException {
+        String sql = "SELECT * FROM complements WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToComplement(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Mettre à jour un complément
+     */
+    public void update(Complement complement) throws SQLException {
+        String sql = "UPDATE complements SET libelle = ?, prix = ?, imageUrl = ?, type = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, complement.getLibelle());
+            stmt.setBigDecimal(2, complement.getPrix());
+            stmt.setString(3, complement.getImageUrl());
+            stmt.setString(4, complement.getType());
+            stmt.setInt(5, complement.getId());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Complement
      */
     private Complement mapResultSetToComplement(ResultSet rs) throws SQLException {
