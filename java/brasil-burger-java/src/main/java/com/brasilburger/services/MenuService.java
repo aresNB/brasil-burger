@@ -36,6 +36,7 @@ public class MenuService {
             System.out.println("\n1. Créer un menu");
             System.out.println("2. Lister tous les menus");
             System.out.println("3. Modifier un menu");
+            System.out.println("4. Archiver un menu");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -50,6 +51,9 @@ public class MenuService {
                     break;
                 case 3:
                     modifierMenu();
+                    break;
+                case 4:
+                    archiverMenu();
                     break;
                 case 0:
                     return;
@@ -247,6 +251,61 @@ public class MenuService {
 
         } catch (SQLException e) {
             System.out.println("❌ Erreur lors de la modification: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
+
+    private void archiverMenu() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("ARCHIVER UN MENU"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Menu> menus = menuDAO.findAllActive();
+            if (menus.isEmpty()) {
+                System.out.println("\n📭 Aucun menu actif trouvé.");
+                ConsoleUtils.pause();
+                return;
+            }
+            System.out.println("\n📋 Menus actifs :");
+            for (Menu menu : menus) {
+                System.out.println("  " + menu);
+            }
+
+            System.out.print("\nID du menu à archiver : ");
+            int id = ConsoleUtils.lireEntier(scanner);
+
+            Menu menu = menuDAO.findById(id);
+            if (menu == null) {
+                System.out.println("❌ Menu introuvable!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            if (menu.isArchived()) {
+                System.out.println("⚠️  Ce menu est déjà archivé!");
+                ConsoleUtils.pause();
+                return;
+            }
+
+            System.out.println("\n⚠️  Voulez-vous vraiment archiver ce menu ?");
+            System.out.println(menu.toDetailString());
+            System.out.print("Confirmer (O/N) : ");
+
+            String confirmation = scanner.next().trim().toUpperCase();
+            scanner.nextLine();
+
+            if (confirmation.equals("O") || confirmation.equals("OUI")) {
+                menuDAO.archive(id);
+                System.out.println("\n✅ Menu archivé avec succès!");
+            } else {
+                System.out.println("\n❌ Opération annulée.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de l'archivage: " + e.getMessage());
         }
 
         ConsoleUtils.pause();

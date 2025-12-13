@@ -15,9 +15,6 @@ public class MenuDAO {
         this.connection = DatabaseConfig.getInstance().getConnection();
     }
 
-    /**
-     * Créer un nouveau menu
-     */
     public void create(Menu menu) throws SQLException {
         String sql = "INSERT INTO menus (libelle, imageUrl, burgerId, boissonId, friteId) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -41,9 +38,6 @@ public class MenuDAO {
         }
     }
 
-    /**
-     * Récupérer un menu par ID avec détails
-     */
     public Menu findById(int id) throws SQLException {
         String sql = "SELECT m.*, " +
                 "b.libelle as burger_nom, b.prix as burger_prix, " +
@@ -66,9 +60,6 @@ public class MenuDAO {
         return null;
     }
 
-    /**
-     * Récupérer tous les menus avec détails
-     */
     public List<Menu> findAll() throws SQLException {
         List<Menu> menus = new ArrayList<>();
         String sql = "SELECT m.*, " +
@@ -91,9 +82,6 @@ public class MenuDAO {
         return menus;
     }
 
-    /**
-     * Récupérer les menus actifs
-     */
     public List<Menu> findAllActive() throws SQLException {
         List<Menu> menus = new ArrayList<>();
         String sql = "SELECT m.*, " +
@@ -117,9 +105,6 @@ public class MenuDAO {
         return menus;
     }
 
-    /**
-     * Mettre à jour un menu
-     */
     public void update(Menu menu) throws SQLException {
         String sql = "UPDATE menus SET libelle = ?, imageUrl = ?, burgerId = ?, " +
                 "boissonId = ?, friteId = ? WHERE id = ?";
@@ -136,9 +121,15 @@ public class MenuDAO {
         }
     }
 
-    /**
-     * Mapper un ResultSet vers un objet Menu
-     */
+    public void archive(int id) throws SQLException {
+        String sql = "UPDATE menus SET isArchived = true WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     private Menu mapResultSetToMenu(ResultSet rs) throws SQLException {
         Menu menu = new Menu();
         menu.setId(rs.getInt("id"));
