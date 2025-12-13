@@ -33,6 +33,7 @@ public class BurgerService {
             System.out.println("2. Lister tous les burgers");
             System.out.println("3. Modifier un burger");
             System.out.println("4. Archiver un burger");
+            System.out.println("5. Rechercher par catégorie");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -50,6 +51,9 @@ public class BurgerService {
                     break;
                 case 4:
                     archiverBurger();
+                    break;
+                case 5:
+                    rechercherParCategorie();
                     break;
                 case 0:
                     return;
@@ -305,6 +309,43 @@ public class BurgerService {
 
         } catch (SQLException e) {
             System.out.println("❌ Erreur lors de l'archivage: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
+
+    /**
+     * Rechercher par catégorie
+     */
+    private void rechercherParCategorie() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("RECHERCHE PAR CATÉGORIE"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<BurgerCategorie> categories = categorieDAO.findAll();
+            System.out.println("\n📂 Catégories disponibles :");
+            for (BurgerCategorie cat : categories) {
+                System.out.println("  " + cat);
+            }
+
+            System.out.print("\nChoisir une catégorie (ID) : ");
+            int categorieId = ConsoleUtils.lireEntier(scanner);
+
+            List<Burger> burgers = burgerDAO.findByCategorie(categorieId);
+
+            if (burgers.isEmpty()) {
+                System.out.println("\n📭 Aucun burger trouvé dans cette catégorie.");
+            } else {
+                System.out.println("\n✅ " + burgers.size() + " burger(s) trouvé(s) :\n");
+                for (Burger burger : burgers) {
+                    System.out.println(burger.toDetailString());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la recherche: " + e.getMessage());
         }
 
         ConsoleUtils.pause();

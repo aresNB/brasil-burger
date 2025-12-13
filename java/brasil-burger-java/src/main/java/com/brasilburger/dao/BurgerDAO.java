@@ -144,6 +144,28 @@ public class BurgerDAO {
     }
 
     /**
+     * Récupérer les burgers par catégorie
+     */
+    public List<Burger> findByCategorie(int categorieId) throws SQLException {
+        List<Burger> burgers = new ArrayList<>();
+        String sql = "SELECT b.*, bc.nom as categorie_nom " +
+                "FROM burgers b " +
+                "LEFT JOIN burger_categories bc ON b.categorieId = bc.id " +
+                "WHERE b.categorieId = ? AND b.isArchived = false " +
+                "ORDER BY b.id DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, categorieId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    burgers.add(mapResultSetToBurger(rs));
+                }
+            }
+        }
+        return burgers;
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Burger
      */
     private Burger mapResultSetToBurger(ResultSet rs) throws SQLException {
