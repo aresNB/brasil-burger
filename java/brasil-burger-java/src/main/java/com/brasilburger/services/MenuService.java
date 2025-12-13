@@ -11,6 +11,7 @@ import com.brasilburger.utils.ConsoleUtils;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.List;
 
 public class MenuService {
 
@@ -33,6 +34,7 @@ public class MenuService {
             System.out.println(ConsoleUtils.centerText("GESTION DES MENUS"));
             System.out.println(ConsoleUtils.SEPARATOR);
             System.out.println("\n1. Créer un menu");
+            System.out.println("2. Lister tous les menus");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -41,6 +43,9 @@ public class MenuService {
             switch (choix) {
                 case 1:
                     creerMenu();
+                    break;
+                case 2:
+                    listerMenus();
                     break;
                 case 0:
                     return;
@@ -115,4 +120,31 @@ public class MenuService {
 
         ConsoleUtils.pause();
     }
+
+    private void listerMenus() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("LISTE DES MENUS"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            List<Menu> menus = menuDAO.findAll();
+
+            if (menus.isEmpty()) {
+                System.out.println("\n📭 Aucun menu trouvé.");
+            } else {
+                System.out.println("\n📋 Total : " + menus.size() + " menu(s)\n");
+
+                for (Menu menu : menus) {
+                    System.out.println(menu.toDetailString());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la récupération: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
+
 }

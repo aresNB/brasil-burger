@@ -3,6 +3,8 @@ package com.brasilburger.dao;
 import com.brasilburger.config.DatabaseConfig;
 import com.brasilburger.models.Menu;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.*;
 
 public class MenuDAO {
@@ -62,6 +64,31 @@ public class MenuDAO {
             }
         }
         return null;
+    }
+
+    /**
+     * Récupérer tous les menus avec détails
+     */
+    public List<Menu> findAll() throws SQLException {
+        List<Menu> menus = new ArrayList<>();
+        String sql = "SELECT m.*, " +
+                "b.libelle as burger_nom, b.prix as burger_prix, " +
+                "c1.libelle as boisson_nom, c1.prix as boisson_prix, " +
+                "c2.libelle as frite_nom, c2.prix as frite_prix " +
+                "FROM menus m " +
+                "JOIN burgers b ON m.burgerId = b.id " +
+                "JOIN complements c1 ON m.boissonId = c1.id " +
+                "JOIN complements c2 ON m.friteId = c2.id " +
+                "ORDER BY m.id DESC";
+
+        try (Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                menus.add(mapResultSetToMenu(rs));
+            }
+        }
+        return menus;
     }
 
     /**
