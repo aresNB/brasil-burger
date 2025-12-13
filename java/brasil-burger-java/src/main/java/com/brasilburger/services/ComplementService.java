@@ -29,6 +29,7 @@ public class ComplementService {
             System.out.println("2. Lister tous les compléments");
             System.out.println("3. Modifier un complément");
             System.out.println("4. Archiver un complément");
+            System.out.println("5. Filtrer par type");
             System.out.println("0. Retour au menu principal");
             System.out.print("\nVotre choix : ");
 
@@ -46,6 +47,9 @@ public class ComplementService {
                     break;
                 case 4:
                     archiverComplement();
+                    break;
+                case 5:
+                    filtrerParType();
                     break;
                 case 0:
                     return;
@@ -300,6 +304,41 @@ public class ComplementService {
 
         } catch (SQLException e) {
             System.out.println("❌ Erreur lors de l'archivage: " + e.getMessage());
+        }
+
+        ConsoleUtils.pause();
+    }
+
+    /**
+     * Filtrer par type
+     */
+    private void filtrerParType() {
+        ConsoleUtils.clearScreen();
+        System.out.println("\n" + ConsoleUtils.SEPARATOR);
+        System.out.println(ConsoleUtils.centerText("FILTRER PAR TYPE"));
+        System.out.println(ConsoleUtils.SEPARATOR);
+
+        try {
+            System.out.println("\n📂 Type de complément :");
+            System.out.println("  1. BOISSON");
+            System.out.println("  2. FRITE");
+            System.out.print("Votre choix : ");
+            int typeChoix = ConsoleUtils.lireEntier(scanner);
+
+            String type = (typeChoix == 1) ? "BOISSON" : "FRITE";
+            List<Complement> complements = complementDAO.findByType(type);
+
+            if (complements.isEmpty()) {
+                System.out.println("\n📭 Aucun complément de type " + type + " trouvé.");
+            } else {
+                System.out.println("\n✅ " + complements.size() + " complément(s) de type " + type + " :\n");
+                for (Complement c : complements) {
+                    System.out.println(c.toDetailString());
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur lors de la recherche: " + e.getMessage());
         }
 
         ConsoleUtils.pause();

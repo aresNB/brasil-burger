@@ -120,6 +120,24 @@ public class ComplementDAO {
     }
 
     /**
+     * Récupérer les compléments par type (BOISSON ou FRITE)
+     */
+    public List<Complement> findByType(String type) throws SQLException {
+        List<Complement> complements = new ArrayList<>();
+        String sql = "SELECT * FROM complements WHERE type = ? AND isArchived = false ORDER BY id DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, type);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    complements.add(mapResultSetToComplement(rs));
+                }
+            }
+        }
+        return complements;
+    }
+
+    /**
      * Mapper un ResultSet vers un objet Complement
      */
     private Complement mapResultSetToComplement(ResultSet rs) throws SQLException {
