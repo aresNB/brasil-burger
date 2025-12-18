@@ -1,61 +1,35 @@
-@model BrasilBurgerWeb.Models.Burger
+@model IEnumerable<BrasilBurgerWeb.Models.Burger>
+
 
 @{
-    ViewData["Title"] = "Détails";
+    ViewData["Title"] = "Catalogue";
 }
 
 <div class="container mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">Catalogue</a></li>
-            <li class="breadcrumb-item active">@Model.Libelle</li>
-        </ol>
-    </nav>
+    <h2 class="mb-4">Catalogue des burgers</h2>
 
     <div class="row">
-        <div class="col-md-6">
-            @if (!string.IsNullOrEmpty(Model.ImageUrl))
-            {
-                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Libelle">
-            }
-            else
-            {
-                <div class="bg-secondary rounded d-flex align-items-center justify-content-center text-white"
-                    style="height: 400px;">
-                    <i class="bi bi-image" style="font-size: 5rem;"></i>
+        @foreach (var burger in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(burger.ImageUrl))
+                    {
+                        <img src="@burger.ImageUrl" class="card-img-top" alt="@burger.Libelle">
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@burger.Libelle</h5>
+                        <p class="text-primary fw-bold">
+                            @burger.Prix.ToString("N0") FCFA
+                        </p>
+
+                        <a asp-action="Details" asp-route-id="@burger.Id" class="btn btn-danger w-100">
+                            Voir détails
+                        </a>
+                    </div>
                 </div>
-            }
-        </div>
-
-        <div class="col-md-6">
-            <h2>@Model.Libelle</h2>
-
-            @if (Model.Categorie != null)
-            {
-                <span class="badge bg-secondary mb-3">@Model.Categorie.Nom</span>
-            }
-
-            @if (!string.IsNullOrEmpty(Model.Description))
-            {
-                <p class="lead">@Model.Description</p>
-            }
-
-            <hr>
-
-            <h3 class="text-primary">@Model.Prix.ToString("N0") FCFA</h3>
-
-            <div class="mt-4">
-                <a asp-controller="Commande" asp-action="Create" asp-route-burgerId="@Model.Id"
-                    class="btn btn-danger btn-lg w-100">
-                    <i class="bi bi-cart-plus"></i> Commander ce burger
-                </a>
             </div>
-
-            <div class="mt-3">
-                <a asp-action="Index" class="btn btn-outline-secondary w-100">
-                    <i class="bi bi-arrow-left"></i> Retour au catalogue
-                </a>
-            </div>
-        </div>
+        }
     </div>
 </div>
