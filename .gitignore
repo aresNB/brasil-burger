@@ -5,6 +5,10 @@
 bin/
 obj/
 
+# Java / Maven
+java/
+**/target/
+
 # ASP.NET settings
 appsettings.*.json
 !appsettings.json
