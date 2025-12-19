@@ -17,7 +17,6 @@ namespace BrasilBurgerWeb.Controllers
         // GET: Commande/Create?burgerId=5 ou ?menuId=3
         public async Task<IActionResult> Create(int? burgerId, int? menuId)
         {
-            // Vérifier si l'utilisateur est connecté
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
@@ -25,17 +24,13 @@ namespace BrasilBurgerWeb.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Charger le produit sélectionné
             if (burgerId.HasValue)
             {
                 var burger = await _context.Burgers
                     .Include(b => b.Categorie)
                     .FirstOrDefaultAsync(b => b.Id == burgerId);
 
-                if (burger == null)
-                {
-                    return NotFound();
-                }
+                if (burger == null) return NotFound();
 
                 ViewBag.Produit = burger;
                 ViewBag.TypeProduit = "BURGER";
@@ -49,10 +44,7 @@ namespace BrasilBurgerWeb.Controllers
                     .Include(m => m.Frite)
                     .FirstOrDefaultAsync(m => m.Id == menuId);
 
-                if (menu == null)
-                {
-                    return NotFound();
-                }
+                if (menu == null) return NotFound();
 
                 ViewBag.Produit = menu;
                 ViewBag.TypeProduit = "MENU";
@@ -63,24 +55,17 @@ namespace BrasilBurgerWeb.Controllers
                 return BadRequest("Aucun produit sélectionné.");
             }
 
-            // Charger les compléments disponibles
-            var boissons = await _context.Complements
+            ViewBag.Boissons = await _context.Complements
                 .Where(c => c.Type == "BOISSON" && !c.IsArchived)
                 .ToListAsync();
 
-            var frites = await _context.Complements
+            ViewBag.Frites = await _context.Complements
                 .Where(c => c.Type == "FRITE" && !c.IsArchived)
                 .ToListAsync();
 
-            ViewBag.Boissons = boissons;
-            ViewBag.Frites = frites;
-
-            // Charger les zones pour la livraison
-            var zones = await _context.Zones
+            ViewBag.Zones = await _context.Zones
                 .Where(z => z.Actif)
                 .ToListAsync();
-
-            ViewBag.Zones = zones;
 
             return View();
         }
@@ -102,14 +87,13 @@ namespace BrasilBurgerWeb.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Calculer le montant total
             decimal montantTotal = 0;
 
-            // Générer numéro de commande
-            string numeroCommande = "CMD-" + DateTime.UtcNow.ToString("yyyyMMdd") + "-" +
-                                    new Random().Next(1000, 9999);
+            string numeroCommande = "CMD-" +
+                DateTime.UtcNow.ToString("yyyyMMdd") + "-" +
+                new Random().Next(1000, 9999);
 
-            // Créer la commande
+            // ⚠️ NE PAS sauvegarder ici
             var commande = new Commande
             {
                 NumeroCommande = numeroCommande,
@@ -122,52 +106,47 @@ namespace BrasilBurgerWeb.Controllers
             };
 
             _context.Commandes.Add(commande);
-            await _context.SaveChangesAsync();
 
-            // Ajouter la ligne de commande principale (burger ou menu)
+            // BURGER
             if (burgerId.HasValue)
             {
                 var burger = await _context.Burgers.FindAsync(burgerId.Value);
                 if (burger != null)
                 {
-                    var ligne = new LigneCommande
+                    _context.LignesCommande.Add(new LigneCommande
                     {
-                        CommandeId = commande.Id,
+                        Commande = commande,
                         BurgerId = burger.Id,
                         TypeProduit = "BURGER",
                         Quantite = 1,
                         PrixUnitaire = burger.Prix,
                         SousTotal = burger.Prix
-                    };
-                    _context.LignesCommande.Add(ligne);
+                    });
+
                     montantTotal += burger.Prix;
                 }
             }
+            // MENU
             else if (menuId.HasValue)
             {
-                var menu = await _context.Menus
-                    .Include(m => m.Burger)
-                    .Include(m => m.Boisson)
-                    .Include(m => m.Frite)
-                    .FirstOrDefaultAsync(m => m.Id == menuId);
-
+                var menu = await _context.Menus.FindAsync(menuId.Value);
                 if (menu != null)
                 {
-                    var ligne = new LigneCommande
+                    _context.LignesCommande.Add(new LigneCommande
                     {
-                        CommandeId = commande.Id,
+                        Commande = commande,
                         MenuId = menu.Id,
                         TypeProduit = "MENU",
                         Quantite = 1,
                         PrixUnitaire = menu.PrixTotal,
                         SousTotal = menu.PrixTotal
-                    };
-                    _context.LignesCommande.Add(ligne);
+                    });
+
                     montantTotal += menu.PrixTotal;
                 }
             }
 
-            // Ajouter les compléments sélectionnés
+            // COMPLEMENTS
             if (complementIds != null && complementIds.Any())
             {
                 foreach (var complementId in complementIds)
@@ -175,22 +154,22 @@ namespace BrasilBurgerWeb.Controllers
                     var complement = await _context.Complements.FindAsync(complementId);
                     if (complement != null)
                     {
-                        var ligne = new LigneCommande
+                        _context.LignesCommande.Add(new LigneCommande
                         {
-                            CommandeId = commande.Id,
+                            Commande = commande,
                             ComplementId = complement.Id,
                             TypeProduit = "COMPLEMENT",
                             Quantite = 1,
                             PrixUnitaire = complement.Prix,
                             SousTotal = complement.Prix
-                        };
-                        _context.LignesCommande.Add(ligne);
+                        });
+
                         montantTotal += complement.Prix;
                     }
                 }
             }
 
-            // Ajouter les frais de livraison si nécessaire
+            // LIVRAISON
             if (modeConsommation == "LIVRAISON" && zoneId.HasValue)
             {
                 var zone = await _context.Zones.FindAsync(zoneId.Value);
@@ -200,31 +179,30 @@ namespace BrasilBurgerWeb.Controllers
                 }
             }
 
-            // Mettre à jour le montant total
+            // ✅ Montant FINAL avant sauvegarde
             commande.MontantTotal = montantTotal;
+
+            // ✅ UNE SEULE sauvegarde
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Commande créée ! Veuillez procéder au paiement.";
             return RedirectToAction("Payer", "Paiement", new { commandeId = commande.Id });
         }
 
-        // GET: Commande/MesCommandes
         public async Task<IActionResult> MesCommandes()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Auth");
-            }
 
             var commandes = await _context.Commandes
                 .Include(c => c.Zone)
                 .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Burger)
+                    .ThenInclude(l => l.Burger)
                 .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Menu)
+                    .ThenInclude(l => l.Menu)
                 .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Complement)
+                    .ThenInclude(l => l.Complement)
                 .Where(c => c.ClientId == userId.Value)
                 .OrderByDescending(c => c.DateCommande)
                 .ToListAsync();
@@ -232,42 +210,25 @@ namespace BrasilBurgerWeb.Controllers
             return View(commandes);
         }
 
-        // GET: Commande/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
-            {
                 return RedirectToAction("Login", "Auth");
-            }
 
             var commande = await _context.Commandes
-                .Include(c => c.Client)
                 .Include(c => c.Zone)
                 .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Burger)
+                    .ThenInclude(l => l.Burger)
                 .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Menu)
-                        .ThenInclude(m => m.Burger)
+                    .ThenInclude(l => l.Menu)
                 .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Menu)
-                        .ThenInclude(m => m.Boisson)
-                .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Menu)
-                        .ThenInclude(m => m.Frite)
-                .Include(c => c.LignesCommande)
-                    .ThenInclude(lc => lc.Complement)
+                    .ThenInclude(l => l.Complement)
                 .FirstOrDefaultAsync(c => c.Id == id && c.ClientId == userId.Value);
 
-            if (commande == null)
-            {
-                return NotFound();
-            }
+            if (commande == null) return NotFound();
 
             return View(commande);
         }
