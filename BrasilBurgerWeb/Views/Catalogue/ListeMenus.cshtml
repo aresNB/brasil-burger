@@ -1,0 +1,77 @@
+@model IEnumerable<BrasilBurgerWeb.Models.Menu>
+
+@{
+    ViewData["Title"] = "Menus";
+    var filtreActif = ViewBag.FiltreActif ?? "menus";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger fw-bold">Brasil Burger</h2>
+    </div>
+
+    <!-- Onglets de navigation -->
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "tous" ? "active bg-danger" : "")" asp-action="Index">Tous</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "menus" ? "active bg-danger" : "")" asp-action="Menus">Menus</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "burgers" ? "active bg-danger" : "")" asp-action="Burgers">Burgers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "complements" ? "active bg-danger" : "")"
+                asp-action="Complements">Compléments</a>
+        </li>
+    </ul>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var menu in Model)
+            {
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        @if (!string.IsNullOrEmpty(menu.ImageUrl))
+                        {
+                            <img src="@menu.ImageUrl" class="card-img-top" alt="@menu.Libelle"
+                                style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <div class="text-center">
+                                    <i class="bi bi-box-seam text-muted" style="font-size: 2rem;"></i>
+                                    <p class="small text-muted mt-2">
+                                        🍔 + 🥤 + 🍟
+                                    </p>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="card-body">
+                            <h5 class="card-title">@menu.Libelle</h5>
+                            <p class="card-text text-muted small">
+                                @menu.Burger?.Libelle,
+                                @menu.Boisson?.Libelle,
+                                @menu.Frite?.Libelle
+                            </p>
+                            <p class="text-danger fw-bold fs-5">@menu.PrixTotal.ToString("N0") FCFA</p>
+                            <a asp-action="DetailsMenu" asp-route-id="@menu.Id" class="btn btn-danger w-100">
+                                Modifier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aucun menu disponible pour le moment.
+        </div>
+    }
+</div>
