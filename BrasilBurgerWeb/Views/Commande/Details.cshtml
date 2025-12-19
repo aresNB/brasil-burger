@@ -1,0 +1,137 @@
+@model BrasilBurgerWeb.Models.Commande
+
+@{
+    ViewData["Title"] = "Détails commande";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="MesCommandes">Mes commandes</a></li>
+            <li class="breadcrumb-item active">#@Model.NumeroCommande</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Informations commande -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Commande #@Model.NumeroCommande</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Date :</strong> @Model.DateCommande.ToString("dd/MM/yyyy HH:mm")</p>
+                            <p><strong>État :</strong>
+                                @{
+                                    var badgeClass = Model.Etat switch
+                                    {
+                                        "EN_ATTENTE" => "bg-warning",
+                                        "VALIDEE" => "bg-success",
+                                        "EN_PREPARATION" => "bg-info",
+                                        "TERMINEE" => "bg-primary",
+                                        "EN_LIVRAISON" => "bg-info",
+                                        "LIVREE" => "bg-success",
+                                        "ANNULEE" => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeClass">@Model.Etat</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Mode :</strong> @Model.ModeConsommation.Replace("_", " ")</p>
+                            @if (Model.ModeConsommation == "LIVRAISON")
+                            {
+                                <p><strong>Adresse :</strong> @Model.AdresseLivraison</p>
+                                @if (Model.Zone != null)
+                                {
+                                    <p><strong>Zone :</strong> @Model.Zone.Nom</p>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produits commandés -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Produits commandés</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.LignesCommande != null && Model.LignesCommande.Any())
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                    <th class="text-end">Prix unitaire</th>
+                                    <th class="text-end">Sous-total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ligne in Model.LignesCommande)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (ligne.TypeProduit == "BURGER")
+                                            {
+                                                <i class="bi bi-circle-fill text-danger"></i>
+                                                @ligne.Burger?.Libelle
+                                            }
+                                            else if (ligne.TypeProduit == "MENU")
+                                            {
+                                                <i class="bi bi-box-seam text-success"></i>
+                                                @ligne.Menu?.Libelle
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-plus-circle text-info"></i>
+                                                @ligne.Complement?.Libelle
+                                            }
+                                        </td>
+                                        <td>@ligne.Quantite</td>
+                                        <td class="text-end">@ligne.PrixUnitaire.ToString("N0") FCFA</td>
+                                        <td class="text-end">@ligne.SousTotal.ToString("N0") FCFA</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Récapitulatif -->
+        <div class="col-md-4">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Récapitulatif</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.ModeConsommation == "LIVRAISON" && Model.Zone != null)
+                    {
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Frais de livraison</span>
+                            <span>@Model.Zone.PrixLivraison.ToString("N0") FCFA</span>
+                        </div>
+                    }
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total</strong>
+                        <h4 class="text-danger mb-0">@Model.MontantTotal.ToString("N0") FCFA</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+                <a asp-action="MesCommandes" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
