@@ -1,0 +1,110 @@
+@model IEnumerable<BrasilBurgerWeb.Models.Complement>
+
+@{
+    ViewData["Title"] = "Compléments";
+    var filtreActif = ViewBag.FiltreActif ?? "complements";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger fw-bold">Brasil Burger</h2>
+    </div>
+
+    <!-- Onglets de navigation -->
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "tous" ? "active bg-danger" : "")" asp-action="Index">Tous</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "menus" ? "active bg-danger" : "")" asp-action="Menus">Menus</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "burgers" ? "active bg-danger" : "")" asp-action="Burgers">Burgers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "complements" ? "active bg-danger" : "")"
+                asp-action="Complements">Compléments</a>
+        </li>
+    </ul>
+
+    @if (Model.Any())
+    {
+        var boissons = Model.Where(c => c.Type == "BOISSON").ToList();
+        var frites = Model.Where(c => c.Type == "FRITE").ToList();
+
+        <!-- Boissons -->
+        @if (boissons.Any())
+        {
+            <h4 class="mt-4 mb-3">🥤 Boissons</h4>
+            <div class="row">
+                @foreach (var complement in boissons)
+                {
+                    <div class="col-md-4 col-lg-3 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            @if (!string.IsNullOrEmpty(complement.ImageUrl))
+                            {
+                                <img src="@complement.ImageUrl" class="card-img-top" alt="@complement.Libelle"
+                                    style="height: 200px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-cup-straw text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            }
+
+                            <div class="card-body">
+                                <h5 class="card-title">@complement.Libelle</h5>
+                                <p class="text-danger fw-bold fs-5">
+                                    @complement.Prix.ToString("N0") FCFA
+                                </p>
+                                <button class="btn btn-danger w-100">Modifier</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Frites -->
+        @if (frites.Any())
+        {
+            <h4 class="mt-4 mb-3">🍟 Frites</h4>
+            <div class="row">
+                @foreach (var complement in frites)
+                {
+                    <div class="col-md-4 col-lg-3 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            @if (!string.IsNullOrEmpty(complement.ImageUrl))
+                            {
+                                <img src="@complement.ImageUrl" class="card-img-top" alt="@complement.Libelle"
+                                    style="height: 200px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-bag text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            }
+
+                            <div class="card-body">
+                                <h5 class="card-title">@complement.Libelle</h5>
+                                <p class="text-danger fw-bold fs-5">
+                                    @complement.Prix.ToString("N0") FCFA
+                                </p>
+                                <button class="btn btn-danger w-100">Modifier</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Aucun complément disponible pour le moment.
+        </div>
+    }
+</div>

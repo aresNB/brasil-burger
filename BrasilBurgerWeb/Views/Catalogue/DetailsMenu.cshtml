@@ -1,0 +1,77 @@
+@model BrasilBurgerWeb.Models.Menu
+
+@{
+    ViewData["Title"] = "Détails Menu";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Catalogue</a></li>
+            <li class="breadcrumb-item"><a asp-action="Menus">Menus</a></li>
+            <li class="breadcrumb-item active">@Model.Libelle</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Libelle">
+            }
+            else
+            {
+                <div class="bg-secondary rounded d-flex align-items-center justify-content-center text-white"
+                    style="height: 400px;">
+                    <div class="text-center">
+                        <i class="bi bi-box-seam" style="font-size: 5rem;"></i>
+                        <p class="mt-3">🍔 + 🥤 + 🍟</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h2>@Model.Libelle</h2>
+            <span class="badge bg-success mb-3">Menu Complet</span>
+
+            <hr>
+
+            <h5>Composition du menu :</h5>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <strong>Burger :</strong> @Model.Burger?.Libelle
+                    <span class="text-muted">(@Model.Burger?.Prix.ToString("N0") FCFA)</span>
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <strong>Boisson :</strong> @Model.Boisson?.Libelle
+                    <span class="text-muted">(@Model.Boisson?.Prix.ToString("N0") FCFA)</span>
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <strong>Frites :</strong> @Model.Frite?.Libelle
+                    <span class="text-muted">(@Model.Frite?.Prix.ToString("N0") FCFA)</span>
+                </li>
+            </ul>
+
+            <hr>
+
+            <h3 class="text-danger">Prix Total : @Model.PrixTotal.ToString("N0") FCFA</h3>
+
+            <div class="mt-4">
+                <a asp-controller="Commande" asp-action="Create" asp-route-menuId="@Model.Id"
+                    class="btn btn-danger btn-lg w-100">
+                    <i class="bi bi-cart-plus"></i> Commander ce menu
+                </a>
+            </div>
+
+            <div class="mt-3">
+                <a asp-action="Menus" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-arrow-left"></i> Retour aux menus
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
