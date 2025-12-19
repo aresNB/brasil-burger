@@ -47,6 +47,10 @@ namespace BrasilBurgerWeb.Data
         public DbSet<Complement> Complements { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Zone> Zones { get; set; }
+        public DbSet<Quartier> Quartiers { get; set; }
+        public DbSet<Commande> Commandes { get; set; }
+        public DbSet<LigneCommande> LignesCommande { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -94,6 +98,39 @@ namespace BrasilBurgerWeb.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Tel)
                 .IsUnique();
+
+            // Configuration des tables
+            modelBuilder.Entity<Zone>().ToTable("zones");
+            modelBuilder.Entity<Quartier>().ToTable("quartiers");
+            modelBuilder.Entity<Commande>().ToTable("commandes");
+            modelBuilder.Entity<LigneCommande>().ToTable("lignes_commande");
+
+            // Relations Zone-Quartier
+            modelBuilder.Entity<Quartier>()
+                .HasOne(q => q.Zone)
+                .WithMany(z => z.Quartiers)
+                .HasForeignKey(q => q.ZoneId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relations Commande
+            modelBuilder.Entity<Commande>()
+                .HasOne(c => c.Client)
+                .WithMany()
+                .HasForeignKey(c => c.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Commande>()
+                .HasOne(c => c.Zone)
+                .WithMany()
+                .HasForeignKey(c => c.ZoneId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Relations LigneCommande
+            modelBuilder.Entity<LigneCommande>()
+                .HasOne(lc => lc.Commande)
+                .WithMany(c => c.LignesCommande)
+                .HasForeignKey(lc => lc.CommandeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
