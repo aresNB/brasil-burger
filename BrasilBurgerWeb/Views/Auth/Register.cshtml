@@ -1,0 +1,79 @@
+@model BrasilBurgerWeb.Models.User
+
+@{
+    ViewData["Title"] = "Créer un compte";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center text-danger mb-4">
+                        <i class="bi bi-person-plus-fill"></i> Créer un compte
+                    </h2>
+
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Nom" class="form-label">Nom</label>
+                                <input asp-for="Nom" class="form-control" />
+                                <span asp-validation-for="Nom" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Prenom" class="form-label">Prénom</label>
+                                <input asp-for="Prenom" class="form-control" />
+                                <span asp-validation-for="Prenom" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Tel" class="form-label">Téléphone</label>
+                            <input asp-for="Tel" class="form-control" placeholder="+221 77 123 45 67" />
+                            <span asp-validation-for="Tel" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Mot de passe</label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Adresse" class="form-label">Adresse (optionnel)</label>
+                            <textarea asp-for="Adresse" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-check-circle"></i> Créer mon compte
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <p class="text-center">
+                        Vous avez déjà un compte ?
+                        <a asp-action="Login" class="text-danger fw-bold">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
