@@ -1,4 +1,4 @@
-@model IEnumerable<BrasilBurgerWeb.Models.Burger>
+@* @model IEnumerable<BrasilBurgerWeb.Models.Burger>
 
 
 @{
@@ -32,4 +32,83 @@
             </div>
         }
     </div>
+</div> *@
+
+
+@model IEnumerable<BrasilBurgerWeb.Models.Burger>
+
+@{
+    ViewData["Title"] = "Catalogue Brasil Burger";
+    var filtreActif = ViewBag.FiltreActif ?? "tous";
+}
+
+<div class="container mt-4">
+    <!-- Header avec onglets -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger fw-bold">Brasil Burger</h2>
+    </div>
+
+    <!-- Onglets de navigation -->
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "tous" ? "active bg-danger" : "")" asp-action="Index">Tous</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "menus" ? "active bg-danger" : "")" asp-action="Menus">Menus</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "burgers" ? "active bg-danger" : "")" asp-action="Burgers">Burgers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filtreActif == "complements" ? "active bg-danger" : "")"
+                asp-action="Complements">Compléments</a>
+        </li>
+    </ul>
+
+    <!-- Grille de produits -->
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var burger in Model)
+            {
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        @if (!string.IsNullOrEmpty(burger.ImageUrl))
+                        {
+                            <img src="@burger.ImageUrl" class="card-img-top" alt="@burger.Libelle"
+                                style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        }
+
+                        <div class="card-body">
+                            <h5 class="card-title">@burger.Libelle</h5>
+                            @if (!string.IsNullOrEmpty(burger.Description))
+                            {
+                                <p class="card-text text-muted small">
+                                    @(burger.Description.Length > 50 ?
+                                                            burger.Description.Substring(0, 50) + "..." :
+                                                            burger.Description)
+                                </p>
+                            }
+                            <p class="text-danger fw-bold fs-5">@burger.Prix.ToString("N0") FCFA</p>
+                            <a asp-action="Details" asp-route-id="@burger.Id" class="btn btn-danger w-100">
+                                Modifier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aucun burger disponible pour le moment.
+        </div>
+    }
 </div>
