@@ -46,6 +46,7 @@ namespace BrasilBurgerWeb.Data
         public DbSet<Burger> Burgers { get; set; }
         public DbSet<Complement> Complements { get; set; }
         public DbSet<Menu> Menus { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -82,6 +83,17 @@ namespace BrasilBurgerWeb.Data
                 .WithMany()
                 .HasForeignKey(m => m.FriteId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+                .ToTable("users");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Tel)
+                .IsUnique();
         }
     }
 }
