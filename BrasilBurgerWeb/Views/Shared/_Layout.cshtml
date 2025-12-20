@@ -112,9 +112,44 @@
             </main>
         </div>
 
-        <footer class="border-top footer text-muted">
-            <div class="container text-center">
-                &copy; 2024 - Brasil Burger - Application de gestion de commandes
+        <footer class="border-top text-muted">
+            <div class="container">
+                <div class="row py-4">
+                    <div class="col-md-4">
+                        <h5 class="text-white">🍔 Brasil Burger</h5>
+                        <p class="text-light">
+                            Le meilleur burger de Dakar !<br>
+                            Commandez en ligne et faites-vous livrer.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-white">Navigation</h6>
+                        <ul class="list-unstyled">
+                            <li><a asp-controller="Catalogue" asp-action="Index"
+                                    class="text-light text-decoration-none">Catalogue</a></li>
+                            <li><a asp-controller="Auth" asp-action="Login"
+                                    class="text-light text-decoration-none">Connexion</a></li>
+                            <li><a asp-controller="Auth" asp-action="Register"
+                                    class="text-light text-decoration-none">Inscription</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-white">Contact</h6>
+                        <p class="text-light">
+                            <i class="bi bi-telephone"></i> +221 77 123 45 67<br>
+                            <i class="bi bi-envelope"></i> contact@brasilburger.com<br>
+                            <i class="bi bi-geo-alt"></i> Dakar, Sénégal
+                        </p>
+                    </div>
+                </div>
+                <div class="text-center py-3 border-top border-secondary">
+                    <p class="mb-0 text-light">
+                        &copy; 2024 Brasil Burger - Projet L3 ISM |
+                        <a href="https://www.github.com" target="_blank" class="text-light">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </p>
+                </div>
             </div>
         </footer>
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
