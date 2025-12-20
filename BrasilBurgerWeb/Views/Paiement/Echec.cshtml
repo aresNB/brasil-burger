@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Paiement échoué";
+    var commandeId = ViewBag.CommandeId;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-x-circle-fill text-danger" style="font-size: 5rem;"></i>
+                    </div>
+
+                    <h2 class="text-danger mb-3">Paiement échoué</h2>
+
+                    <p class="lead mb-4">
+                        Une erreur s'est produite lors du traitement de votre paiement.
+                    </p>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Votre commande n'a pas été validée. Veuillez réessayer.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="Payer" asp-route-commandeId="@commandeId" class="btn btn-danger btn-lg">
+                            <i class="bi bi-arrow-repeat"></i> Réessayer le paiement
+                        </a>
+                        <a asp-controller="Commande" asp-action="MesCommandes" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à mes commandes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
