@@ -26,10 +26,21 @@ body {
 /* Brasil Burger - Styles personnalisés */
 
 :root {
-    --brasil-red: #dc3545;
+    --brasil-red: #b71c1c;
     --brasil-dark-red: #c82333;
     --brasil-light-red: #ff6b6b;
 }
+
+.bg-brasil-gradient {
+    background: linear-gradient(
+        180deg,
+        #b71c1c 0%,
+        #a91313 60%,
+        #811111 100%
+
+    );
+}
+
 
 .navbar-brand img {
     max-height: 50px;
@@ -52,6 +63,8 @@ body {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
+
+
 
 .card-img-top {
     height: 200px;
