@@ -51,6 +51,7 @@ namespace BrasilBurgerWeb.Data
         public DbSet<Quartier> Quartiers { get; set; }
         public DbSet<Commande> Commandes { get; set; }
         public DbSet<LigneCommande> LignesCommande { get; set; }
+        public DbSet<Paiement> Paiements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -131,6 +132,26 @@ namespace BrasilBurgerWeb.Data
                 .WithMany(c => c.LignesCommande)
                 .HasForeignKey(lc => lc.CommandeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configuration table Paiement
+            modelBuilder.Entity<Paiement>().ToTable("paiements");
+
+            // Index unique sur commandeId (une commande = un seul paiement)
+            modelBuilder.Entity<Paiement>()
+                .HasIndex(p => p.CommandeId)
+                .IsUnique();
+
+            // Index unique sur refTransaction
+            modelBuilder.Entity<Paiement>()
+                .HasIndex(p => p.RefTransaction)
+                .IsUnique();
+
+            // Relation Paiement-Commande
+            modelBuilder.Entity<Paiement>()
+                .HasOne(p => p.Commande)
+                .WithMany()
+                .HasForeignKey(p => p.CommandeId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
