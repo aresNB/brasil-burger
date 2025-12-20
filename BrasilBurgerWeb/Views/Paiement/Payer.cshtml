@@ -1,0 +1,108 @@
+@model BrasilBurgerWeb.Models.Commande
+
+@{
+    ViewData["Title"] = "Paiement";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3><i class="bi bi-credit-card"></i> Paiement de la commande</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Récapitulatif commande -->
+                    <div class="alert alert-info">
+                        <h5><i class="bi bi-info-circle"></i> Récapitulatif</h5>
+                        <p class="mb-1"><strong>Commande :</strong> #@Model.NumeroCommande</p>
+                        <p class="mb-1"><strong>Mode :</strong> @Model.ModeConsommation.Replace("_", " ")</p>
+                        @if (Model.LignesCommande != null)
+                        {
+                            <p class="mb-0"><strong>Produits :</strong> @Model.LignesCommande.Count article(s)</p>
+                        }
+                    </div>
+
+                    <hr>
+
+                    <h4 class="text-center text-danger mb-4">
+                        Montant à payer : @Model.MontantTotal.ToString("N0") FCFA
+                    </h4>
+
+                    <form asp-action="Traiter" method="post">
+                        <input type="hidden" name="commandeId" value="@Model.Id" />
+
+                        <h5 class="mb-3">Choisir le mode de paiement :</h5>
+
+                        <!-- Wave -->
+                        <div class="card mb-3 border-primary">
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="moyenPaiement" id="wave"
+                                        value="WAVE" required>
+                                    <label class="form-check-label w-100" for="wave">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="mb-1">
+                                                    <i class="bi bi-phone text-primary"></i> Wave
+                                                </h5>
+                                                <p class="text-muted small mb-0">
+                                                    Paiement mobile sécurisé via Wave
+                                                </p>
+                                            </div>
+                                            <div class="text-end">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Wave_payment_logo.svg/200px-Wave_payment_logo.svg.png"
+                                                    alt="Wave" height="30">
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Orange Money -->
+                        <div class="card mb-4 border-warning">
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="moyenPaiement" id="om" value="OM"
+                                        required>
+                                    <label class="form-check-label w-100" for="om">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="mb-1">
+                                                    <i class="bi bi-phone text-warning"></i> Orange Money
+                                                </h5>
+                                                <p class="text-muted small mb-0">
+                                                    Paiement mobile sécurisé via Orange Money
+                                                </p>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-warning text-dark"
+                                                    style="font-size: 1.2rem;">OM</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Note :</strong> Ceci est une simulation de paiement pour ce projet académique.
+                            En production, l'intégration réelle des API Wave et Orange Money serait nécessaire.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirmer le paiement
+                            </button>
+                            <a asp-controller="Commande" asp-action="MesCommandes" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
