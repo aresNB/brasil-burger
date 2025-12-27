@@ -39,8 +39,9 @@ COPY . .
 # Generate autoload files and run scripts
 RUN composer dump-autoload --optimize --no-dev
 
-# Set permissions
-RUN chown -R www-data:www-data /app/var /app/public
+# Create var directory if it doesn't exist and set permissions
+RUN mkdir -p /app/var /app/var/cache /app/var/log && \
+    chown -R www-data:www-data /app/var /app/public
 
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/sites-available/default
