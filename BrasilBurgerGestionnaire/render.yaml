@@ -1,0 +1,16 @@
+services:
+    - type: web
+      name: brasil-burger-gestionnaire
+      env: docker
+      region: frankfurt
+      plan: free
+      branch: symfony
+      rootDir: BrasilBurgerGestionnaire
+      dockerfilePath: ./Dockerfile
+      envVars:
+          - key: APP_ENV
+            value: prod
+          - key: APP_SECRET
+            generateValue: true
+          - key: DATABASE_URL
+            sync: false
