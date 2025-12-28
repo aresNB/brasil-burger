@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Service\StatistiqueService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,9 +17,11 @@ class DashboardController extends AbstractController
     #[Route('/', name: 'app_dashboard')]
     public function index(): Response
     {
-        // Vérifier que l'utilisateur est bien un gestionnaire
+        /** @var User $user */
         $user = $this->getUser();
-        if (!$user || $user->getRole() !== 'GESTIONNAIRE') {
+
+        // Vérifier que l'utilisateur est bien un gestionnaire
+        if (!$user || !in_array('ROLE_GESTIONNAIRE', $user->getRoles())) {
             $this->addFlash('error', 'Accès réservé aux gestionnaires.');
             return $this->redirectToRoute('app_logout');
         }
