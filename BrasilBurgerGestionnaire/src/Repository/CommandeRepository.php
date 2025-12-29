@@ -109,4 +109,67 @@ class CommandeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Rechercher des commandes avec filtres multiples
+     */
+    public function findWithFilters(
+        ?string $etat = null,
+        ?\DateTime $date = null,
+        ?int $clientId = null,
+        ?string $typeProduit = null
+    ): array {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.client', 'client')
+            ->leftJoin('c.zone', 'zone')
+            ->leftJoin('c.livreur', 'livreur')
+            ->addSelect('client', 'zone', 'livreur')
+            ->orderBy('c.dateCommande', 'DESC');
+
+        if ($etat) {
+            $qb->andWhere('c.etat = :etat')
+                ->setParameter('etat', $etat);
+        }
+
+        if ($date) {
+            $startOfDay = (clone $date)->setTime(0, 0, 0);
+            $endOfDay = (clone $date)->setTime(23, 59, 59);
+
+            $qb->andWhere('c.dateCommande BETWEEN :start AND :end')
+                ->setParameter('start', $startOfDay)
+                ->setParameter('end', $endOfDay);
+        }
+
+        if ($clientId) {
+            $qb->andWhere('c.clientId = :clientId')
+                ->setParameter('clientId', $clientId);
+        }
+
+        if ($typeProduit) {
+            $qb->leftJoin('c.lignesCommande', 'lc')
+                ->andWhere('lc.typeProduit = :typeProduit')
+                ->setParameter('typeProduit', $typeProduit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Compter les commandes par état
+     */
+    public function countByEtat(): array
+    {
+        $results = $this->createQueryBuilder('c')
+            ->select('c.etat, COUNT(c.id) as total')
+            ->groupBy('c.etat')
+            ->getQuery()
+            ->getResult();
+
+        $counts = [];
+        foreach ($results as $result) {
+            $counts[$result['etat']] = (int)$result['total'];
+        }
+
+        return $counts;
+    }
 }
