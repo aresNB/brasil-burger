@@ -200,7 +200,7 @@
 				<i class="bi bi-clock-history"></i>
 				Historique
 			</a>
-			<a href="#" class="{% if app.request.get('_route') starts with 'app_zone' %}active{% endif %}">
+			<a href="{{ path('app_zone_index') }}" class="{% if app.request.get('_route') starts with 'app_zone' %}active{% endif %}">
 				<i class="bi bi-geo-alt"></i>
 				Gérer les zones
 			</a>
