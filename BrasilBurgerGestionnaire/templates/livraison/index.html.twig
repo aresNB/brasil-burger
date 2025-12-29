@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Affecter les livraisons
+{% endblock %}
+{% block page_title %}Affecter les livraisons
+{% endblock %}
+
+{% block body %}
+	<!-- Résumé -->
+	<div class="row mb-4">
+		<div class="col-md-12">
+			<div class="alert alert-info d-flex align-items-center">
+				<i class="bi bi-info-circle me-3" style="font-size: 2rem;"></i>
+				<div>
+					<strong>{{ totalCommandes }}
+						commande(s) en attente de livraison</strong>
+					<p class="mb-0 small">Sélectionnez les commandes d'une zone et affectez-les à un livreur disponible.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% if commandesParZone is empty %}
+		<!-- Aucune commande -->
+		<div class="card">
+			<div class="card-body text-center py-5">
+				<i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+				<h4 class="mt-3">Aucune commande en attente</h4>
+				<p class="text-muted">Toutes les livraisons ont été affectées !</p>
+				<a href="{{ path('app_livraison_historique') }}" class="btn btn-primary mt-3">
+					<i class="bi bi-clock-history"></i>
+					Voir l'historique
+				</a>
+			</div>
+		</div>
+	{% else %}
+		<!-- Commandes par zone -->
+		{% for zoneNom, data in commandesParZone %}
+			<div class="card mb-4">
+				<div class="card-header bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<h5 class="mb-0">
+							<i class="bi bi-geo-alt-fill text-primary"></i>
+							{{ zoneNom }}
+							<span class="badge bg-primary ms-2">{{ data.commandes|length }}
+								commande(s)</span>
+						</h5>
+						{% if data.zone %}
+							<span class="text-muted">
+								Frais de livraison :
+								{{ data.zone.prixLivraison|number_format(0, ',', ' ') }}
+								FCFA
+							</span>
+						{% endif %}
+					</div>
+				</div>
+				<div class="card-body">
+					<form method="post" action="{{ path('app_livraison_affecter') }}" id="form-zone-{{ data.zoneId ?? 0 }}">
+						<input
+						type="hidden" name="_token" value="{{ csrf_token('affecter_livraison') }}">
+
+						<!-- Tableau des commandes -->
+						<div class="table-responsive mb-3">
+							<table class="table table-hover">
+								<thead class="table-light">
+									<tr>
+										<th style="width: 50px;">
+											<input type="checkbox" class="form-check-input select-all" data-zone="{{ data.zoneId ?? 0 }}">
+										</th>
+										<th>N° Commande</th>
+										<th>Client</th>
+										<th>Adresse</th>
+										<th>Montant</th>
+										<th>État</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for commande in data.commandes %}
+										<tr>
+											<td>
+												<input type="checkbox" name="commandes[]" value="{{ commande.id }}" class="form-check-input commande-checkbox" data-zone="{{ data.zoneId ?? 0 }}">
+											</td>
+											<td>
+												<strong>{{ commande.numeroCommande }}</strong><br>
+												<small class="text-muted">{{ commande.dateCommande|date('d/m/Y H:i') }}</small>
+											</td>
+											<td>
+												{{ commande.client.prenom }}
+												{{ commande.client.nom }}<br>
+												<small class="text-muted">{{ commande.client.tel }}</small>
+											</td>
+											<td>
+												<small>{{ commande.adresseLivraison }}</small>
+											</td>
+											<td>
+												<strong class="text-primary">{{ commande.montantTotal|number_format(0, ',', ' ') }}
+													FCFA</strong>
+											</td>
+											<td>
+												{% set badgeClass = {
+                                                'VALIDEE': 'success',
+                                                'EN_PREPARATION': 'info',
+                                                'TERMINEE': 'primary'
+                                            } %}
+												<span class="badge bg-{{ badgeClass[commande.etat] ?? 'secondary' }}">
+													{{ commande.etat|replace({'_': ' '}) }}
+												</span>
+											</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+
+						<!-- Sélection du livreur -->
+						<div class="row align-items-end">
+							<div class="col-md-8">
+								<label for="livreur-{{ data.zoneId ?? 0 }}" class="form-label">
+									<i class="bi bi-person-badge"></i>
+									Affecter à un livreur :
+								</label>
+								<select name="livreur_id" id="livreur-{{ data.zoneId ?? 0 }}" class="form-select" required>
+									<option value="">-- Sélectionner un livreur --</option>
+									{% for livreur in livreurs %}
+										<option value="{{ livreur.id }}">
+											{{ livreur.prenom }}
+											{{ livreur.nom }}
+											{% if livreur.vehicule %}
+												({{ livreur.vehicule }})
+											{% endif %}
+											{% if livreur.disponible %}
+												✓ Disponible
+											{% else %}
+												✗ Indisponible
+											{% endif %}
+										</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="col-md-4">
+								<button type="submit" class="btn btn-danger w-100">
+									<i class="bi bi-truck"></i>
+									Affecter les commandes sélectionnées
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+
+	<!-- Lien vers l'historique -->
+	<div class="text-center mt-4">
+		<a href="{{ path('app_livraison_historique') }}" class="btn btn-outline-primary">
+			<i class="bi bi-clock-history"></i>
+			Voir l'historique des livraisons
+		</a>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		// Cocher/décocher toutes les commandes d'une zone
+document.querySelectorAll('.select-all').forEach(checkbox => {
+checkbox.addEventListener('change', function () {
+const zoneId = this.dataset.zone;
+const isChecked = this.checked;
+
+document.querySelectorAll (`.commande-checkbox[data-zone="${zoneId}"]`).forEach(cb => {
+cb.checked = isChecked;
+});
+});
+});
+	</script>
+{% endblock %}
