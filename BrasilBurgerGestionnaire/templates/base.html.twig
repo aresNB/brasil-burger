@@ -171,15 +171,15 @@
 			</a>
 
 			<div class="px-3 py-2 text-white-50 small">CATALOGUE</div>
-			<a href="#" class="{% if app.request.get('_route') starts with 'app_burger' %}active{% endif %}">
+			<a href="{{ path('app_burger_index') }}" class="{% if app.request.get('_route') starts with 'app_burger' %}active{% endif %}">
 				<i class="bi bi-circle-fill"></i>
 				Burgers
 			</a>
-			<a href="#" class="{% if app.request.get('_route') starts with 'app_menu' %}active{% endif %}">
+			<a href="{{ path('app_menu_index') }}" class="{% if app.request.get('_route') starts with 'app_menu' %}active{% endif %}">
 				<i class="bi bi-box-seam"></i>
 				Menus
 			</a>
-			<a href="#" class="{% if app.request.get('_route') starts with 'app_complement' %}active{% endif %}">
+			<a href="{{ path('app_complement_index') }}" class="{% if app.request.get('_route') starts with 'app_complement' %}active{% endif %}">
 				<i class="bi bi-cup-straw"></i>
 				Compléments
 			</a>
