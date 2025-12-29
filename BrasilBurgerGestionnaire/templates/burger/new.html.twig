@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau burger
+{% endblock %}
+{% block page_title %}Créer un nouveau burger
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_burger_index') }}">Burgers</a>
+			</li>
+			<li class="breadcrumb-item active">Nouveau</li>
+		</ol>
+	</nav>
+
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-plus-circle"></i>
+						Nouveau burger
+					</h5>
+				</div>
+				<div class="card-body">
+					<form method="post" action="{{ path('app_burger_new') }}" enctype="multipart/form-data">
+						<input type="hidden" name="_token" value="{{ csrf_token('create_burger') }}">
+
+						<div class="mb-3">
+							<label for="libelle" class="form-label">Nom du burger
+								<span class="text-danger">*</span>
+							</label>
+							<input type="text" class="form-control" id="libelle" name="libelle" required placeholder="Ex: Brasil Burger Classic">
+						</div>
+
+						<div class="mb-3">
+							<label for="description" class="form-label">Description</label>
+							<textarea class="form-control" id="description" name="description" rows="3" placeholder="Décrivez les ingrédients et saveurs..."></textarea>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label for="prix" class="form-label">Prix (FCFA)
+									<span class="text-danger">*</span>
+								</label>
+								<input type="number" class="form-control" id="prix" name="prix" required min="0" step="100" placeholder="Ex: 2500">
+							</div>
+
+							<div class="col-md-6 mb-3">
+								<label for="categorie_id" class="form-label">Catégorie</label>
+								<select class="form-select" id="categorie_id" name="categorie_id">
+									<option value="">-- Aucune --</option>
+									{% for categorie in categories %}
+										<option value="{{ categorie.id }}">{{ categorie.nom }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+
+						<div class="mb-4">
+							<label for="image" class="form-label">Image</label>
+							<input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
+							<small class="form-text text-muted">Format JPG, JPEG ou PNG. Taille max : 5 MB</small>
+						</div>
+
+						<div class="d-flex gap-2">
+							<button type="submit" class="btn btn-danger">
+								<i class="bi bi-check-circle"></i>
+								Créer le burger
+							</button>
+							<a href="{{ path('app_burger_index') }}" class="btn btn-outline-secondary">
+								<i class="bi bi-x-circle"></i>
+								Annuler
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
