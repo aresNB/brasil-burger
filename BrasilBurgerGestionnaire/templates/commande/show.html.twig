@@ -1,0 +1,243 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande #{{ commande.numeroCommande }}
+{% endblock %}
+{% block page_title %}Détails de la commande
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_commande_index') }}">Commandes</a>
+			</li>
+			<li class="breadcrumb-item active">{{ commande.numeroCommande }}</li>
+		</ol>
+	</nav>
+
+	<div
+		class="row">
+		<!-- Informations principales -->
+		<div class="col-md-8">
+			<div class="card mb-4">
+				<div class="card-header bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<h5 class="mb-0">
+							<i class="bi bi-receipt"></i>
+							Commande #{{ commande.numeroCommande }}
+						</h5>
+						{% set badgeClass = {
+                        'EN_ATTENTE': 'warning',
+                        'VALIDEE': 'success',
+                        'EN_PREPARATION': 'info',
+                        'TERMINEE': 'primary',
+                        'EN_LIVRAISON': 'info',
+                        'LIVREE': 'success',
+                        'ANNULEE': 'danger'
+                    } %}
+						<span class="badge bg-{{ badgeClass[commande.etat] ?? 'secondary' }} fs-6">
+							{{ commande.etat|replace({'_': ' '}) }}
+						</span>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<p class="mb-2">
+								<strong>
+									<i class="bi bi-calendar3"></i>
+									Date :</strong><br>
+								{{ commande.dateCommande|date('d/m/Y à H:i') }}
+							</p>
+							<p class="mb-2">
+								<strong>
+									<i class="bi bi-person"></i>
+									Client :</strong><br>
+								{{ commande.client.prenom }}
+								{{ commande.client.nom }}<br>
+								<small class="text-muted">{{ commande.client.tel }}</small><br>
+								<small class="text-muted">{{ commande.client.email }}</small>
+							</p>
+						</div>
+						<div class="col-md-6">
+							<p class="mb-2">
+								<strong>
+									<i class="bi bi-box-seam"></i>
+									Mode de consommation :</strong><br>
+								{% if commande.modeConsommation == 'SUR_PLACE' %}
+									<span class="badge bg-info">Sur place</span>
+								{% elseif commande.modeConsommation == 'A_EMPORTER' %}
+									<span class="badge bg-warning">À emporter</span>
+								{% else %}
+									<span class="badge bg-primary">Livraison</span>
+								{% endif %}
+							</p>
+							{% if commande.modeConsommation == 'LIVRAISON' %}
+								<p class="mb-2">
+									<strong>
+										<i class="bi bi-geo-alt"></i>
+										Adresse de livraison :</strong><br>
+									{{ commande.adresseLivraison }}
+								</p>
+								{% if commande.zone %}
+									<p class="mb-2">
+										<strong>
+											<i class="bi bi-map"></i>
+											Zone :</strong><br>
+										{{ commande.zone.nom }}
+										(+{{ commande.zone.prixLivraison|number_format(0, ',', ' ') }}
+										FCFA)
+									</p>
+								{% endif %}
+								{% if commande.livreur %}
+									<p class="mb-2">
+										<strong>
+											<i class="bi bi-person-badge"></i>
+											Livreur :</strong><br>
+										{{ commande.livreur.prenom }}
+										{{ commande.livreur.nom }}
+									</p>
+								{% endif %}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Produits commandés -->
+			<div class="card mb-4">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-cart3"></i>
+						Produits commandés
+					</h5>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-hover mb-0">
+							<thead class="table-light">
+								<tr>
+									<th>Produit</th>
+									<th class="text-center">Quantité</th>
+									<th class="text-end">Prix unitaire</th>
+									<th class="text-end">Sous-total</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for ligne in commande.lignesCommande %}
+									<tr>
+										<td>
+											{% if ligne.typeProduit == 'BURGER' %}
+												<i class="bi bi-circle-fill text-danger"></i>
+												<strong>{{ ligne.burger.libelle }}</strong>
+											{% elseif ligne.typeProduit == 'MENU' %}
+												<i class="bi bi-box-seam text-success"></i>
+												<strong>{{ ligne.menu.libelle }}</strong>
+											{% else %}
+												<i class="bi bi-plus-circle text-info"></i>
+												<strong>{{ ligne.complement.libelle }}</strong>
+												<small class="text-muted">({{ ligne.complement.type }})</small>
+											{% endif %}
+										</td>
+										<td class="text-center">{{ ligne.quantite }}</td>
+										<td class="text-end">{{ ligne.prixUnitaire|number_format(0, ',', ' ') }}
+											FCFA</td>
+										<td class="text-end">
+											<strong>{{ ligne.sousTotal|number_format(0, ',', ' ') }}
+												FCFA</strong>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+							<tfoot class="table-light">
+								<tr>
+									<td colspan="3" class="text-end">
+										<strong>TOTAL :</strong>
+									</td>
+									<td class="text-end">
+										<h5 class="text-primary mb-0">{{ commande.montantTotal|number_format(0, ',', ' ') }}
+											FCFA</h5>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Actions -->
+		<div class="col-md-4">
+			<div class="card mb-4">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-gear"></i>
+						Actions
+					</h5>
+				</div>
+				<div
+					class="card-body">
+					<!-- Changer l'état -->
+					{% if commande.etat not in ['ANNULEE', 'LIVREE'] %}
+						<form method="post" action="{{ path('app_commande_changer_etat', {id: commande.id}) }}" class="mb-3">
+							<input type="hidden" name="_token" value="{{ csrf_token('changer_etat_' ~ commande.id) }}">
+							<label for="etat" class="form-label">Changer l'état :</label>
+							<select name="etat" id="etat" class="form-select mb-2">
+								<option value="EN_ATTENTE" {% if commande.etat == 'EN_ATTENTE' %} selected {% endif %}>En attente</option>
+								<option value="VALIDEE" {% if commande.etat == 'VALIDEE' %} selected {% endif %}>Validée</option>
+								<option value="EN_PREPARATION" {% if commande.etat == 'EN_PREPARATION' %} selected {% endif %}>En préparation</option>
+								<option value="TERMINEE" {% if commande.etat == 'TERMINEE' %} selected {% endif %}>Terminée</option>
+								{% if commande.modeConsommation == 'LIVRAISON' %}
+									<option value="EN_LIVRAISON" {% if commande.etat == 'EN_LIVRAISON' %} selected {% endif %}>En livraison</option>
+									<option value="LIVREE" {% if commande.etat == 'LIVREE' %} selected {% endif %}>Livrée</option>
+								{% endif %}
+							</select>
+							<button type="submit" class="btn btn-primary w-100">
+								<i class="bi bi-arrow-repeat"></i>
+								Changer l'état
+							</button>
+						</form>
+					{% endif %}
+
+					<!-- Annuler la commande -->
+					{% if commande.etat not in ['TERMINEE', 'LIVREE', 'ANNULEE'] %}
+						<form method="post" action="{{ path('app_commande_annuler', {id: commande.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">
+							<input type="hidden" name="_token" value="{{ csrf_token('annuler_commande_' ~ commande.id) }}">
+							<button type="submit" class="btn btn-danger w-100">
+								<i class="bi bi-x-circle"></i>
+								Annuler la commande
+							</button>
+						</form>
+					{% endif %}
+
+					<!-- Retour -->
+					<a href="{{ path('app_commande_index') }}" class="btn btn-outline-secondary w-100 mt-3">
+						<i class="bi bi-arrow-left"></i>
+						Retour à la liste
+					</a>
+				</div>
+			</div>
+
+			<!-- Informations supplémentaires -->
+			<div class="card">
+				<div class="card-header bg-white">
+					<h6 class="mb-0">
+						<i class="bi bi-info-circle"></i>
+						Informations
+					</h6>
+				</div>
+				<div class="card-body">
+					<p class="mb-2 small">
+						<strong>Créée le :</strong><br>
+						{{ commande.createdAt|date('d/m/Y à H:i') }}
+					</p>
+					<p class="mb-0 small">
+						<strong>Dernière modification :</strong><br>
+						{{ commande.updatedAt|date('d/m/Y à H:i') }}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
