@@ -192,9 +192,13 @@
 			</a>
 
 			<div class="px-3 py-2 text-white-50 small">LIVRAISONS</div>
-			<a href="#" class="{% if app.request.get('_route') starts with 'app_livraison' %}active{% endif %}">
+			<a href="{{ path('app_livraison_index') }}" class="{% if app.request.get('_route') == 'app_livraison_index' %}active{% endif %}">
 				<i class="bi bi-truck"></i>
 				Affecter livraisons
+			</a>
+			<a href="{{ path('app_livraison_historique') }}" class="{% if app.request.get('_route') == 'app_livraison_historique' %}active{% endif %}">
+				<i class="bi bi-clock-history"></i>
+				Historique
 			</a>
 			<a href="#" class="{% if app.request.get('_route') starts with 'app_zone' %}active{% endif %}">
 				<i class="bi bi-geo-alt"></i>
