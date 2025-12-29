@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le menu
+{% endblock %}
+{% block page_title %}Modifier "{{ menu.libelle }}"
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_menu_index') }}">Menus</a>
+			</li>
+			<li class="breadcrumb-item active">Modifier</li>
+		</ol>
+	</nav>
+
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-pencil"></i>
+						Modifier le menu
+					</h5>
+				</div>
+				<div class="card-body">
+					<form method="post" action="{{ path('app_menu_edit', {id: menu.id}) }}" enctype="multipart/form-data">
+						<input
+						type="hidden" name="_token" value="{{ csrf_token('edit_menu_' ~ menu.id) }}">
+
+						<!-- Image actuelle -->
+						{% if menu.imageUrl %}
+							<div class="mb-3 text-center">
+								<label class="form-label d-block">Image actuelle :</label>
+								<img src="{{ menu.imageUrl }}" alt="{{ menu.libelle }}" class="img-thumbnail" style="max-height: 200px;">
+							</div>
+						{% endif %}
+
+						<div class="mb-3">
+							<label for="libelle" class="form-label">Nom du menu
+								<span class="text-danger">*</span>
+							</label>
+							<input type="text" class="form-control" id="libelle" name="libelle" value="{{ menu.libelle }}" required>
+						</div>
+
+						<div class="mb-3">
+							<label for="burger_id" class="form-label">Burger
+								<span class="text-danger">*</span>
+							</label>
+							<select class="form-select" id="burger_id" name="burger_id" required>
+								{% for burger in burgers %}
+									<option value="{{ burger.id }}" {% if menu.burger and menu.burger.id == burger.id %} selected {% endif %}>
+										{{ burger.libelle }}
+										({{ burger.prix|number_format(0, ',', ' ') }}
+										FCFA)
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label for="boisson_id" class="form-label">Boisson
+								<span class="text-danger">*</span>
+							</label>
+							<select class="form-select" id="boisson_id" name="boisson_id" required>
+								{% for boisson in boissons %}
+									<option value="{{ boisson.id }}" {% if menu.boisson and menu.boisson.id == boisson.id %} selected {% endif %}>
+										{{ boisson.libelle }}
+										({{ boisson.prix|number_format(0, ',', ' ') }}
+										FCFA)
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label for="frite_id" class="form-label">Frites
+								<span class="text-danger">*</span>
+							</label>
+							<select class="form-select" id="frite_id" name="frite_id" required>
+								{% for frite in frites %}
+									<option value="{{ frite.id }}" {% if menu.frite and menu.frite.id == frite.id %} selected {% endif %}>
+										{{ frite.libelle }}
+										({{ frite.prix|number_format(0, ',', ' ') }}
+										FCFA)
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-4">
+							<label for="image" class="form-label">Changer l'image</label>
+							<input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
+							<small class="form-text text-muted">Laissez vide pour conserver l'image actuelle</small>
+						</div>
+
+						<div class="d-flex gap-2">
+							<button type="submit" class="btn btn-danger">
+								<i class="bi bi-check-circle"></i>
+								Enregistrer
+							</button>
+							<a href="{{ path('app_menu_index') }}" class="btn btn-outline-secondary">
+								<i class="bi bi-x-circle"></i>
+								Annuler
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

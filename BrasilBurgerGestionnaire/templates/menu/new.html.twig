@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau menu
+{% endblock %}
+{% block page_title %}Créer un nouveau menu
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_menu_index') }}">Menus</a>
+			</li>
+			<li class="breadcrumb-item active">Nouveau</li>
+		</ol>
+	</nav>
+
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-plus-circle"></i>
+						Nouveau menu
+					</h5>
+				</div>
+				<div class="card-body">
+					<form method="post" action="{{ path('app_menu_new') }}" enctype="multipart/form-data">
+						<input type="hidden" name="_token" value="{{ csrf_token('create_menu') }}">
+
+						<div class="mb-3">
+							<label for="libelle" class="form-label">Nom du menu
+								<span class="text-danger">*</span>
+							</label>
+							<input type="text" class="form-control" id="libelle" name="libelle" required placeholder="Ex: Menu Brasil Classique">
+						</div>
+
+						<div class="alert alert-info">
+							<i class="bi bi-info-circle"></i>
+							<strong>Composition du menu :</strong>
+							Sélectionnez 1 burger + 1 boisson + 1 frite
+						</div>
+
+						<div class="mb-3">
+							<label for="burger_id" class="form-label">Burger
+								<span class="text-danger">*</span>
+							</label>
+							<select class="form-select" id="burger_id" name="burger_id" required>
+								<option value="">-- Sélectionner un burger --</option>
+								{% for burger in burgers %}
+									<option value="{{ burger.id }}">
+										{{ burger.libelle }}
+										({{ burger.prix|number_format(0, ',', ' ') }}
+										FCFA)
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label for="boisson_id" class="form-label">Boisson
+								<span class="text-danger">*</span>
+							</label>
+							<select class="form-select" id="boisson_id" name="boisson_id" required>
+								<option value="">-- Sélectionner une boisson --</option>
+								{% for boisson in boissons %}
+									<option value="{{ boisson.id }}">
+										{{ boisson.libelle }}
+										({{ boisson.prix|number_format(0, ',', ' ') }}
+										FCFA)
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label for="frite_id" class="form-label">Frites
+								<span class="text-danger">*</span>
+							</label>
+							<select class="form-select" id="frite_id" name="frite_id" required>
+								<option value="">-- Sélectionner des frites --</option>
+								{% for frite in frites %}
+									<option value="{{ frite.id }}">
+										{{ frite.libelle }}
+										({{ frite.prix|number_format(0, ',', ' ') }}
+										FCFA)
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-4">
+							<label for="image" class="form-label">Image du menu</label>
+							<input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
+							<small class="form-text text-muted">Format JPG, JPEG ou PNG. Taille max : 5 MB</small>
+						</div>
+
+						<div class="d-flex gap-2">
+							<button type="submit" class="btn btn-danger">
+								<i class="bi bi-check-circle"></i>
+								Créer le menu
+							</button>
+							<a href="{{ path('app_menu_index') }}" class="btn btn-outline-secondary">
+								<i class="bi bi-x-circle"></i>
+								Annuler
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
