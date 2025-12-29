@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Zone
+	{{ zone.nom }}
+{% endblock %}
+{% block page_title %}Zone "{{ zone.nom }}"
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_zone_index') }}">Zones</a>
+			</li>
+			<li class="breadcrumb-item active">{{ zone.nom }}</li>
+		</ol>
+	</nav>
+
+	<div
+		class="row">
+		<!-- Informations de la zone -->
+		<div class="col-md-4">
+			<div class="card mb-4">
+				<div class="card-header bg-white">
+					<div class="d-flex justify-content-between align-items-center">
+						<h5 class="mb-0">
+							<i class="bi bi-info-circle"></i>
+							Informations
+						</h5>
+						{% if zone.actif %}
+							<span class="badge bg-success">Active</span>
+						{% else %}
+							<span class="badge bg-secondary">Inactive</span>
+						{% endif %}
+					</div>
+				</div>
+				<div class="card-body">
+					<p class="mb-2">
+						<strong>
+							<i class="bi bi-geo-alt"></i>
+							Nom :</strong><br>
+						{{ zone.nom }}
+					</p>
+					<p class="mb-2">
+						<strong>
+							<i class="bi bi-currency-dollar"></i>
+							Prix de livraison :</strong><br>
+						<span class="text-danger h4">{{ zone.prixLivraison|number_format(0, ',', ' ') }}
+							FCFA</span>
+					</p>
+					<p class="mb-2">
+						<strong>
+							<i class="bi bi-buildings"></i>
+							Quartiers :</strong><br>
+						{{ zone.quartiers|length }}
+						quartier(s)
+					</p>
+
+					<hr>
+
+					<div class="d-grid gap-2">
+						<a href="{{ path('app_zone_edit', {id: zone.id}) }}" class="btn btn-primary">
+							<i class="bi bi-pencil"></i>
+							Modifier
+						</a>
+						<form method="post" action="{{ path('app_zone_delete', {id: zone.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette zone ?');">
+							<input type="hidden" name="_token" value="{{ csrf_token('delete_zone_' ~ zone.id) }}">
+							<button type="submit" class="btn btn-danger w-100">
+								<i class="bi bi-trash"></i>
+								Supprimer la zone
+							</button>
+						</form>
+						<a href="{{ path('app_zone_index') }}" class="btn btn-outline-secondary">
+							<i class="bi bi-arrow-left"></i>
+							Retour
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Liste des quartiers -->
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-buildings"></i>
+						Quartiers ({{ zone.quartiers|length }})
+					</h5>
+				</div>
+				<div
+					class="card-body">
+					<!-- Formulaire d'ajout -->
+					<form method="post" action="{{ path('app_zone_quartier_add', {id: zone.id}) }}" class="mb-4 p-3 bg-light rounded">
+						<input type="hidden" name="_token" value="{{ csrf_token('add_quartier_' ~ zone.id) }}">
+						<h6 class="mb-3">
+							<i class="bi bi-plus-circle"></i>
+							Ajouter un quartier
+						</h6>
+						<div class="row g-2">
+							<div class="col-md-6">
+								<input type="text" class="form-control" name="nom" placeholder="Nom du quartier" required>
+							</div>
+							<div class="col-md-3">
+								<input type="text" class="form-control" name="code_postal" placeholder="Code postal (optionnel)">
+							</div>
+							<div class="col-md-3">
+								<button type="submit" class="btn btn-danger w-100">
+									<i class="bi bi-plus"></i>
+									Ajouter
+								</button>
+							</div>
+						</div>
+					</form>
+
+					<!-- Liste des quartiers -->
+					{% if zone.quartiers is empty %}
+						<div class="text-center py-4 text-muted">
+							<i class="bi bi-inbox" style="font-size: 2rem;"></i>
+							<p class="mt-2">Aucun quartier dans cette zone</p>
+							<small>Utilisez le formulaire ci-dessus pour en ajouter</small>
+						</div>
+					{% else %}
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead class="table-light">
+									<tr>
+										<th>Nom du quartier</th>
+										<th>Code postal</th>
+										<th class="text-end">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for quartier in zone.quartiers %}
+										<tr>
+											<td>
+												<i class="bi bi-building text-primary"></i>
+												{{ quartier.nom }}
+											</td>
+											<td>
+												{% if quartier.codePostal %}
+													<span class="badge bg-light text-dark">{{ quartier.codePostal }}</span>
+												{% else %}
+													<span class="text-muted">-</span>
+												{% endif %}
+											</td>
+											<td class="text-end">
+												<form method="post" action="{{ path('app_zone_quartier_delete', {zoneId: zone.id, quartierId: quartier.id}) }}" class="d-inline" onsubmit="return confirm('Supprimer ce quartier ?');">
+													<input type="hidden" name="_token" value="{{ csrf_token('delete_quartier_' ~ quartier.id) }}">
+													<button type="submit" class="btn btn-sm btn-outline-danger">
+														<i class="bi bi-trash"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
