@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des zones
+{% endblock %}
+{% block page_title %}Gestion des zones de livraison
+{% endblock %}
+
+{% block body %}
+	<!-- Bouton ajouter -->
+	<div class="row mb-4">
+		<div class="col-md-12">
+			<a href="{{ path('app_zone_new') }}" class="btn btn-danger">
+				<i class="bi bi-plus-circle"></i>
+				Nouvelle zone
+			</a>
+		</div>
+	</div>
+
+	<!-- Liste des zones -->
+	<div class="row">
+		{% if zones is empty %}
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-body text-center py-5">
+						<i class="bi bi-geo-alt text-muted" style="font-size: 4rem;"></i>
+						<h4 class="mt-3">Aucune zone de livraison</h4>
+						<p class="text-muted">Créez votre première zone pour commencer.</p>
+						<a href="{{ path('app_zone_new') }}" class="btn btn-danger mt-3">
+							<i class="bi bi-plus-circle"></i>
+							Créer une zone
+						</a>
+					</div>
+				</div>
+			</div>
+		{% else %}
+			{% for zone in zones %}
+				<div class="col-md-6 mb-4">
+					<div class="card h-100 {% if not zone.actif %}border-secondary{% endif %}">
+						<div class="card-header bg-white d-flex justify-content-between align-items-center">
+							<h5 class="mb-0">
+								<i class="bi bi-geo-alt-fill text-primary"></i>
+								{{ zone.nom }}
+							</h5>
+							{% if zone.actif %}
+								<span class="badge bg-success">Active</span>
+							{% else %}
+								<span class="badge bg-secondary">Inactive</span>
+							{% endif %}
+						</div>
+						<div class="card-body">
+							<div class="row mb-3">
+								<div class="col-6">
+									<p class="mb-1 text-muted small">Prix de livraison</p>
+									<h4 class="text-danger mb-0">{{ zone.prixLivraison|number_format(0, ',', ' ') }}
+										FCFA</h4>
+								</div>
+								<div class="col-6">
+									<p class="mb-1 text-muted small">Quartiers</p>
+									<h4 class="mb-0">
+										{{ zone.quartiers|length }}
+										<small class="text-muted fs-6">quartier(s)</small>
+									</h4>
+								</div>
+							</div>
+
+							{% if zone.quartiers is not empty %}
+								<div class="mb-3">
+									<p class="mb-2 small text-muted">Quartiers couverts :</p>
+									<div>
+										{% for quartier in zone.quartiers|slice(0, 5) %}
+											<span class="badge bg-light text-dark me-1 mb-1">{{ quartier.nom }}</span>
+										{% endfor %}
+										{% if zone.quartiers|length > 5 %}
+											<span class="badge bg-light text-dark">+{{ zone.quartiers|length - 5 }}
+												autres</span>
+										{% endif %}
+									</div>
+								</div>
+							{% endif %}
+
+							<div class="d-grid gap-2">
+								<a href="{{ path('app_zone_show', {id: zone.id}) }}" class="btn btn-primary">
+									<i class="bi bi-eye"></i>
+									Voir les détails
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+{% endblock %}
