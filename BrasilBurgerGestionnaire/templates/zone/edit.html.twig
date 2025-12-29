@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la zone
+{% endblock %}
+{% block page_title %}Modifier la zone "{{ zone.nom }}"
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_zone_index') }}">Zones</a>
+			</li>
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_zone_show', {id: zone.id}) }}">{{ zone.nom }}</a>
+			</li>
+			<li class="breadcrumb-item active">Modifier</li>
+		</ol>
+	</nav>
+
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-pencil"></i>
+						Modifier la zone
+					</h5>
+				</div>
+				<div class="card-body">
+					<form method="post" action="{{ path('app_zone_edit', {id: zone.id}) }}">
+						<input type="hidden" name="_token" value="{{ csrf_token('edit_zone_' ~ zone.id) }}">
+
+						<div class="mb-3">
+							<label for="nom" class="form-label">Nom de la zone
+								<span class="text-danger">*</span>
+							</label>
+							<input type="text" class="form-control" id="nom" name="nom" value="{{ zone.nom }}" required>
+						</div>
+
+						<div class="mb-3">
+							<label for="prix_livraison" class="form-label">Prix de livraison (FCFA)
+								<span class="text-danger">*</span>
+							</label>
+							<input type="number" class="form-control" id="prix_livraison" name="prix_livraison" value="{{ zone.prixLivraison }}" required min="0" step="100">
+						</div>
+
+						<div class="mb-4">
+							<div class="form-check form-switch">
+								<input class="form-check-input" type="checkbox" id="actif" name="actif" value="1" {% if zone.actif %} checked {% endif %}>
+								<label class="form-check-label" for="actif">
+									Zone active
+								</label>
+							</div>
+						</div>
+
+						<div class="d-flex gap-2">
+							<button type="submit" class="btn btn-danger">
+								<i class="bi bi-check-circle"></i>
+								Enregistrer
+							</button>
+							<a href="{{ path('app_zone_show', {id: zone.id}) }}" class="btn btn-outline-secondary">
+								<i class="bi bi-x-circle"></i>
+								Annuler
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
