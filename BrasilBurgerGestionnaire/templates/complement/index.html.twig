@@ -1,0 +1,145 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des compléments
+{% endblock %}
+{% block page_title %}Gestion des compléments
+{% endblock %}
+
+{% block body %}
+	<!-- Bouton ajouter -->
+	<div class="row mb-4">
+		<div class="col-md-12">
+			<a href="{{ path('app_complement_new') }}" class="btn btn-danger">
+				<i class="bi bi-plus-circle"></i>
+				Nouveau complément
+			</a>
+		</div>
+	</div>
+
+	<!-- Liste des compléments -->
+	{% if complements is empty %}
+		<div class="card">
+			<div class="card-body text-center py-5">
+				<i class="bi bi-cup-straw text-muted" style="font-size: 4rem;"></i>
+				<h4 class="mt-3">Aucun complément</h4>
+				<p class="text-muted">Créez votre premier complément pour commencer.</p>
+				<a href="{{ path('app_complement_new') }}" class="btn btn-danger mt-3">
+					<i class="bi bi-plus-circle"></i>
+					Créer un complément
+				</a>
+			</div>
+		</div>
+	{% else %}
+		<!-- Boissons -->
+		{% set boissons = complements|filter(c => c.type == 'BOISSON') %}
+		{% if boissons is not empty %}
+			<h4 class="mb-3">
+				<i class="bi bi-cup-straw text-info"></i>
+				Boissons ({{ boissons|length }})</h4>
+			<div class="row mb-5">
+				{% for complement in boissons %}
+					<div class="col-md-3 mb-4">
+						<div class="card h-100 {% if complement.isArchived %}border-secondary{% endif %}">
+							{% if complement.imageUrl %}
+								<img src="{{ complement.imageUrl }}" class="card-img-top" alt="{{ complement.libelle }}" style="height: 150px; object-fit: cover;">
+							{% else %}
+								<div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+									<i class="bi bi-cup-straw text-muted" style="font-size: 3rem;"></i>
+								</div>
+							{% endif %}
+
+							<div class="card-body">
+								<div class="d-flex justify-content-between align-items-start mb-2">
+									<h6 class="card-title mb-0">{{ complement.libelle }}</h6>
+									{% if complement.isArchived %}
+										<span class="badge bg-secondary">Archivé</span>
+									{% else %}
+										<span class="badge bg-success">Actif</span>
+									{% endif %}
+								</div>
+
+								<h5 class="text-danger mb-3">{{ complement.prix|number_format(0, ',', ' ') }}
+									FCFA</h5>
+
+								<div class="d-grid gap-2">
+									<a href="{{ path('app_complement_edit', {id: complement.id}) }}" class="btn btn-primary btn-sm">
+										<i class="bi bi-pencil"></i>
+										Modifier
+									</a>
+									<form method="post" action="{{ path('app_complement_archive', {id: complement.id}) }}">
+										<input type="hidden" name="_token" value="{{ csrf_token('archive_complement_' ~ complement.id) }}">
+										<button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+											{% if complement.isArchived %}
+												<i class="bi bi-arrow-counterclockwise"></i>
+												Désarchiver
+											{% else %}
+												<i class="bi bi-archive"></i>
+												Archiver
+											{% endif %}
+										</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+
+		<!-- Frites -->
+		{% set frites = complements|filter(c => c.type == 'FRITE') %}
+		{% if frites is not empty %}
+			<h4 class="mb-3">
+				<i class="bi bi-bag text-warning"></i>
+				Frites ({{ frites|length }})</h4>
+			<div class="row">
+				{% for complement in frites %}
+					<div class="col-md-3 mb-4">
+						<div class="card h-100 {% if complement.isArchived %}border-secondary{% endif %}">
+							{% if complement.imageUrl %}
+								<img src="{{ complement.imageUrl }}" class="card-img-top" alt="{{ complement.libelle }}" style="height: 150px; object-fit: cover;">
+							{% else %}
+								<div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+									<i class="bi bi-bag text-muted" style="font-size: 3rem;"></i>
+								</div>
+							{% endif %}
+
+							<div class="card-body">
+								<div class="d-flex justify-content-between align-items-start mb-2">
+									<h6 class="card-title mb-0">{{ complement.libelle }}</h6>
+									{% if complement.isArchived %}
+										<span class="badge bg-secondary">Archivé</span>
+									{% else %}
+										<span class="badge bg-success">Actif</span>
+									{% endif %}
+								</div>
+
+								<h5 class="text-danger mb-3">{{ complement.prix|number_format(0, ',', ' ') }}
+									FCFA</h5>
+
+								<div class="d-grid gap-2">
+									<a href="{{ path('app_complement_edit', {id: complement.id}) }}" class="btn btn-primary btn-sm">
+										<i class="bi bi-pencil"></i>
+										Modifier
+									</a>
+									<form method="post" action="{{ path('app_complement_archive', {id: complement.id}) }}">
+										<input type="hidden" name="_token" value="{{ csrf_token('archive_complement_' ~ complement.id) }}">
+										<button type="submit" class="btn btn-outline-secondary btn-sm w-100">
+											{% if complement.isArchived %}
+												<i class="bi bi-arrow-counterclockwise"></i>
+												Désarchiver
+											{% else %}
+												<i class="bi bi-archive"></i>
+												Archiver
+											{% endif %}
+										</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endif %}
+{% endblock %}

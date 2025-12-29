@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le complément
+{% endblock %}
+{% block page_title %}Modifier "{{ complement.libelle }}"
+{% endblock %}
+
+{% block body %}
+	<!-- Breadcrumb -->
+	<nav aria-label="breadcrumb" class="mb-4">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href="{{ path('app_complement_index') }}">Compléments</a>
+			</li>
+			<li class="breadcrumb-item active">Modifier</li>
+		</ol>
+	</nav>
+
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header bg-white">
+					<h5 class="mb-0">
+						<i class="bi bi-pencil"></i>
+						Modifier le complément
+					</h5>
+				</div>
+				<div class="card-body">
+					<form method="post" action="{{ path('app_complement_edit', {id: complement.id}) }}" enctype="multipart/form-data">
+						<input
+						type="hidden" name="_token" value="{{ csrf_token('edit_complement_' ~ complement.id) }}">
+
+						<!-- Image actuelle -->
+						{% if complement.imageUrl %}
+							<div class="mb-3 text-center">
+								<label class="form-label d-block">Image actuelle :</label>
+								<img src="{{ complement.imageUrl }}" alt="{{ complement.libelle }}" class="img-thumbnail" style="max-height: 200px;">
+							</div>
+						{% endif %}
+
+						<div class="mb-3">
+							<label for="libelle" class="form-label">Nom du complément
+								<span class="text-danger">*</span>
+							</label>
+							<input type="text" class="form-control" id="libelle" name="libelle" value="{{ complement.libelle }}" required>
+						</div>
+
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label for="type" class="form-label">Type
+									<span class="text-danger">*</span>
+								</label>
+								<select class="form-select" id="type" name="type" required>
+									<option value="BOISSON" {% if complement.type == 'BOISSON' %} selected {% endif %}>🥤 Boisson</option>
+									<option value="FRITE" {% if complement.type == 'FRITE' %} selected {% endif %}>🍟 Frites</option>
+								</select>
+							</div>
+
+							<div class="col-md-6 mb-3">
+								<label for="prix" class="form-label">Prix (FCFA)
+									<span class="text-danger">*</span>
+								</label>
+								<input type="number" class="form-control" id="prix" name="prix" value="{{ complement.prix }}" required min="0" step="50">
+							</div>
+						</div>
+
+						<div class="mb-4">
+							<label for="image" class="form-label">Changer l'image</label>
+							<input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
+							<small class="form-text text-muted">Laissez vide pour conserver l'image actuelle</small>
+						</div>
+
+						<div class="d-flex gap-2">
+							<button type="submit" class="btn btn-danger">
+								<i class="bi bi-check-circle"></i>
+								Enregistrer
+							</button>
+							<a href="{{ path('app_complement_index') }}" class="btn btn-outline-secondary">
+								<i class="bi bi-x-circle"></i>
+								Annuler
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
