@@ -1,0 +1,242 @@
+/* ===== Messages Flash Améliorés ===== */
+.flash-messages {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    width: 100%;
+}
+
+.alert {
+    animation: slideInRight 0.4s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    border-left-color: #0f5132;
+    color: #0f5132;
+}
+
+.alert-danger,
+.alert-error {
+    background-color: #f8d7da;
+    border-left-color: #842029;
+    color: #842029;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-left-color: #997404;
+    color: #997404;
+}
+
+.alert-info {
+    background-color: #cff4fc;
+    border-left-color: #055160;
+    color: #055160;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Auto-dismiss après 5 secondes */
+.alert.auto-dismiss {
+    animation: slideInRight 0.4s ease-out, fadeOut 0.5s ease-out 4.5s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+}
+
+/* ===== Badges Améliorés ===== */
+.badge {
+    padding: 0.4em 0.8em;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* ===== Cards Améliorées ===== */
+.card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.card-img-top {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* ===== Boutons Améliorés ===== */
+.btn {
+    transition: all 0.3s ease;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border: none;
+}
+
+/* ===== Tables Améliorées ===== */
+.table thead {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+/* ===== Sidebar Active Link ===== */
+.sidebar-menu a.active {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-left: 4px solid white;
+    font-weight: 600;
+}
+
+/* ===== Formulaires ===== */
+.form-control:focus,
+.form-select:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* ===== Pagination ===== */
+.pagination {
+    gap: 5px;
+}
+
+.page-link {
+    border-radius: 8px;
+    border: none;
+    color: #dc3545;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.page-item.active .page-link {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.page-item.disabled .page-link {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+/* ===== Skeleton Loading ===== */
+.skeleton {
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(200, 20%, 80%);
+    }
+    100% {
+        background-color: hsl(200, 20%, 95%);
+    }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .flash-messages {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: 100%;
+    }
+}
+
+/* ===== Stats Cards ===== */
+.stat-card {
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.stat-card.success {
+    border-left-color: #198754;
+}
+
+.stat-card.warning {
+    border-left-color: #ffc107;
+}
+
+.stat-card.danger {
+    border-left-color: #dc3545;
+}
+
+.stat-card.info {
+    border-left-color: #0dcaf0;
+}
+
+.stat-card:hover {
+    border-left-width: 6px;
+}
+
+/* ===== Image Upload Preview ===== */
+.image-preview {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Smooth Scroll ===== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== Loading Spinner ===== */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
