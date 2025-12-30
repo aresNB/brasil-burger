@@ -58,10 +58,45 @@ class BurgerController extends AbstractController
                 return $this->redirectToRoute('app_burger_new');
             }
 
+            // ⬇️ AJOUTER LES VALIDATIONS
+            $errors = [];
+
+            $libelle = trim($request->request->get('libelle'));
+            if (empty($libelle)) {
+                $errors[] = 'Le nom du burger est obligatoire.';
+            } elseif (strlen($libelle) < 3) {
+                $errors[] = 'Le nom du burger doit contenir au moins 3 caractères.';
+            }
+
+            $prix = $request->request->get('prix');
+            if (empty($prix) || !is_numeric($prix) || $prix < 0) {
+                $errors[] = 'Le prix doit être un nombre positif valide.';
+            }
+
+            $imageFile = $request->files->get('image');
+            if ($imageFile) {
+                $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!in_array($imageFile->getMimeType(), $allowedMimes)) {
+                    $errors[] = 'Format d\'image non supporté. Utilisez JPG, JPEG ou PNG.';
+                }
+                if ($imageFile->getSize() > 5 * 1024 * 1024) { // 5 MB
+                    $errors[] = 'L\'image ne doit pas dépasser 5 MB.';
+                }
+            }
+
+            // Si erreurs, afficher et rediriger
+            if (!empty($errors)) {
+                foreach ($errors as $error) {
+                    $this->addFlash('error', $error);
+                }
+                return $this->redirectToRoute('app_burger_new');
+            }
+            // ⬆️ FIN VALIDATIONS
+
             $burger = new Burger();
-            $burger->setLibelle($request->request->get('libelle'));
+            $burger->setLibelle($libelle);
             $burger->setDescription($request->request->get('description'));
-            $burger->setPrix($request->request->get('prix'));
+            $burger->setPrix($prix);
             $burger->setIsArchived(false);
 
             // Catégorie
@@ -74,7 +109,6 @@ class BurgerController extends AbstractController
             }
 
             // Upload de l'image
-            $imageFile = $request->files->get('image');
             if ($imageFile) {
                 $imageUrl = $this->cloudinaryService->uploadImage($imageFile, 'brasil-burger/burgers');
                 if ($imageUrl) {
@@ -97,6 +131,7 @@ class BurgerController extends AbstractController
         ]);
     }
 
+
     #[Route('/{id}/modifier', name: 'app_burger_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id, Request $request): Response
     {
@@ -115,9 +150,44 @@ class BurgerController extends AbstractController
                 return $this->redirectToRoute('app_burger_edit', ['id' => $id]);
             }
 
-            $burger->setLibelle($request->request->get('libelle'));
+            // ⬇️ AJOUTER LES VALIDATIONS
+            $errors = [];
+
+            $libelle = trim($request->request->get('libelle'));
+            if (empty($libelle)) {
+                $errors[] = 'Le nom du burger est obligatoire.';
+            } elseif (strlen($libelle) < 3) {
+                $errors[] = 'Le nom du burger doit contenir au moins 3 caractères.';
+            }
+
+            $prix = $request->request->get('prix');
+            if (empty($prix) || !is_numeric($prix) || $prix < 0) {
+                $errors[] = 'Le prix doit être un nombre positif valide.';
+            }
+
+            $imageFile = $request->files->get('image');
+            if ($imageFile) {
+                $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!in_array($imageFile->getMimeType(), $allowedMimes)) {
+                    $errors[] = 'Format d\'image non supporté. Utilisez JPG, JPEG ou PNG.';
+                }
+                if ($imageFile->getSize() > 5 * 1024 * 1024) { // 5 MB
+                    $errors[] = 'L\'image ne doit pas dépasser 5 MB.';
+                }
+            }
+
+            // Si erreurs, afficher et rediriger
+            if (!empty($errors)) {
+                foreach ($errors as $error) {
+                    $this->addFlash('error', $error);
+                }
+                return $this->redirectToRoute('app_burger_edit', ['id' => $id]);
+            }
+            // ⬆️ FIN VALIDATIONS
+
+            $burger->setLibelle($libelle);
             $burger->setDescription($request->request->get('description'));
-            $burger->setPrix($request->request->get('prix'));
+            $burger->setPrix($prix);
 
             // Catégorie
             $categorieId = $request->request->get('categorie_id');
@@ -129,7 +199,6 @@ class BurgerController extends AbstractController
             }
 
             // Upload de l'image
-            $imageFile = $request->files->get('image');
             if ($imageFile) {
                 // Supprimer l'ancienne image si c'est une URL Cloudinary
                 if ($burger->getImageUrl() && $this->cloudinaryService->isCloudinaryUrl($burger->getImageUrl())) {
@@ -157,6 +226,7 @@ class BurgerController extends AbstractController
             'categories' => $categories
         ]);
     }
+
 
     #[Route('/{id}/archiver', name: 'app_burger_archive', methods: ['POST'])]
     public function archive(int $id, Request $request): Response
