@@ -2,6 +2,7 @@
 
 {% block title %}Gestion des burgers
 {% endblock %}
+
 {% block page_title %}Gestion des burgers
 {% endblock %}
 
@@ -95,4 +96,19 @@
 			{% endfor %}
 		{% endif %}
 	</div>
+
+	<!-- Pagination -->
+	{% if burgers.pageCount > 1 %}
+		<div class="d-flex justify-content-center mt-4">
+			{{ knp_pagination_render(
+                burgers,
+                '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig',
+                {},
+                {
+                    'prev_label': '← Précédent',
+                    'next_label': 'Suivant →'
+                }
+            ) }}
+		</div>
+	{% endif %}
 {% endblock %}

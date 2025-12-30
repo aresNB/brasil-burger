@@ -384,3 +384,41 @@ body {
         max-width: 100%;
     }
 }
+
+
+
+
+
+/* =========================================================
+   Pagination
+========================================================= */
+
+
+.pagination {
+    gap: 5px;
+}
+
+.page-link {
+    border-radius: 8px;
+    border: none;
+    color: #dc3545;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.page-item.active .page-link {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.page-item.disabled .page-link {
+    background-color: #e9ecef;
+    color: #6c757d;
+}

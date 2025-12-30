@@ -7,6 +7,7 @@ use App\Repository\BurgerRepository;
 use App\Repository\BurgerCategorieRepository;
 use App\Service\CloudinaryService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,24 +20,31 @@ class BurgerController extends AbstractController
         private BurgerRepository $burgerRepository,
         private BurgerCategorieRepository $categorieRepository,
         private CloudinaryService $cloudinaryService,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private PaginatorInterface $paginator
     ) {}
 
     #[Route('', name: 'app_burger_index')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $burgers = $this->burgerRepository->createQueryBuilder('b')
+        $queryBuilder = $this->burgerRepository->createQueryBuilder('b')
             ->leftJoin('b.categorie', 'c')
             ->addSelect('c')
             ->orderBy('b.isArchived', 'ASC')
-            ->addOrderBy('b.libelle', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->addOrderBy('b.libelle', 'ASC');
+
+        // Pagination
+        $burgers = $this->paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            12
+        );
 
         return $this->render('burger/index.html.twig', [
             'burgers' => $burgers
         ]);
     }
+
 
     #[Route('/nouveau', name: 'app_burger_new')]
     public function new(Request $request): Response
