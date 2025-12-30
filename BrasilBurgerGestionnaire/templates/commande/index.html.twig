@@ -155,6 +155,15 @@
 					{% endif %}
 				</div>
 			</div>
+			<!-- Pagination -->
+			{% if commandes.pageCount > 1 %}
+				<div class="d-flex justify-content-center mt-4">
+					{{ knp_pagination_render(commandes, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig', {}, {
+                    'prev_label': '← Précédent',
+                    'next_label': 'Suivant →'
+                }) }}
+				</div>
+			{% endif %}
 		</div>
 	</div>
 {% endblock %}

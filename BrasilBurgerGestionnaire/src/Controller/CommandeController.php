@@ -6,6 +6,7 @@ use App\Entity\Commande;
 use App\Repository\CommandeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +18,8 @@ class CommandeController extends AbstractController
     public function __construct(
         private CommandeRepository $commandeRepository,
         private UserRepository $userRepository,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private PaginatorInterface $paginator
     ) {}
 
     #[Route('', name: 'app_commande_index')]
@@ -59,7 +61,12 @@ class CommandeController extends AbstractController
                 ->setParameter('clientId', $clientId);
         }
 
-        $commandes = $queryBuilder->getQuery()->getResult();
+        $commandes = $this->paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            15
+        );
+
 
         // Récupérer tous les clients pour le filtre
         $clients = $this->userRepository->createQueryBuilder('u')
